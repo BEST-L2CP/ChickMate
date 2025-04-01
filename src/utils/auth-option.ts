@@ -29,7 +29,6 @@ export const authOptions: NextAuthOptions = {
 
       // 이메일, 패스워드 부분을 체크해서 맞으면 user 객체 리턴 틀리면 null 리턴
       async authorize(credentials, req) {
-        console.log('credential:', credentials);
         const res = await fetch(`http://localhost:3000/api/auth/sign-in`, {
           method: 'POST',
           headers: {
