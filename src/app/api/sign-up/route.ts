@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { NextResponse } from 'next/server';
 
 interface RequestBody {
   name: string;
@@ -8,19 +9,25 @@ interface RequestBody {
 }
 
 export async function POST(request: Request) {
-  // request.json() 형식으로 body 부분 추출
-  const body: RequestBody = await request.json();
-  // DB User 테이블에 데이터 넣기
-  const user = await prisma.user.create({
-    data: {
-      name: body.name,
-      email: body.email,
-      password: await bcrypt.hash(body.password, 10),
-    },
-  });
+  try {
+    const body: RequestBody = await request.json();
 
-  // user 객체에서 password 부분을 제외하고 나머지 부분만 최종적으로 response 해주기
-  const { password, ...result } = user;
-  console.log('sign-up-route-handler-user:', user);
-  return new Response(JSON.stringify(result));
+    if (!body.name || !body.email || !body.password) {
+      return NextResponse.json({ error: '모든 값을 입력해주세요.' }, { status: 400 });
+    }
+
+    const user = await prisma.user.create({
+      data: {
+        name: body.name,
+        email: body.email,
+        password: await bcrypt.hash(body.password, 10),
+      },
+    });
+
+    const { password, ...result } = user;
+
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: '회원가입에 실패했습니다.' }, { status: 500 });
+  }
 }
