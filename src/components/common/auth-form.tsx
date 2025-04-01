@@ -1,6 +1,6 @@
 'use client';
 
-import { PATH } from '@/constants/path';
+import { PATH } from '@/constants/path-constant';
 import { postSignUp } from '@/features/sign-up/api/client-services';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
