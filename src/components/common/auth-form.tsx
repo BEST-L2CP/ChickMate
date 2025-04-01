@@ -6,18 +6,20 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
+const callback_url = `${process.env.NEXT_PUBLIC_BASE_URL}/${PATH.ON_BOARDING}`;
+
 const AuthForm = () => {
   const path_name = usePathname();
   const router = useRouter();
 
-  const is_sign_up = path_name === PATH.SIGNUP;
+  const is_sign_up = path_name === PATH.SIGN_UP;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
 
-    if (path_name === PATH.SIGNUP) {
+    if (path_name === PATH.SIGN_UP) {
       const sign_up_data = {
         email: String(formData.get('email')),
         password: String(formData.get('password')),
@@ -25,12 +27,12 @@ const AuthForm = () => {
       };
       try {
         await postSignUp(sign_up_data);
-        router.push(PATH.SIGNIN);
+        router.push(PATH.SIGN_IN);
         alert('회원 가입에 성공하셨습니다.');
       } catch (error) {
         alert(error);
       }
-    } else if (path_name === PATH.SIGNIN) {
+    } else if (path_name === PATH.SIGN_IN) {
       const sign_in_data = {
         email: String(formData.get('email')),
         password: String(formData.get('password')),
@@ -38,7 +40,7 @@ const AuthForm = () => {
       try {
         await signIn('credentials', {
           ...sign_in_data,
-          callbackUrl: `http://localhost:3000/${PATH.MAIN}`,
+          callbackUrl: callback_url,
         });
         alert('로그인에 성공하셨습니다.');
       } catch (error) {
@@ -97,19 +99,19 @@ const AuthForm = () => {
         </button>
       </form>
       <div className='mt-4 flex flex-col gap-2 text-center'>
-        <Link href={is_sign_up ? PATH.SIGNIN : PATH.SIGNUP}>
+        <Link href={is_sign_up ? PATH.SIGN_IN : PATH.SIGN_UP}>
           {is_sign_up ? '이미 계정이 있으신가요? ' : '계정이 없으신가요? '}
         </Link>
         {!is_sign_up && (
           <>
             <button
-              onClick={() => signIn('google', { callbackUrl: `http://localhost:3000/${PATH.MAIN}` })}
+              onClick={() => signIn('google', { callbackUrl: callback_url })}
               className='w-full rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300'
             >
               구글 로그인
             </button>
             <button
-              onClick={() => signIn('naver', { callbackUrl: `http://localhost:3000/${PATH.MAIN}` })}
+              onClick={() => signIn('naver', { callbackUrl: callback_url })}
               className='w-full rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300'
             >
               네이버
