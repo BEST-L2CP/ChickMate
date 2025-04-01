@@ -15,9 +15,7 @@ export async function POST(request: Request) {
       email: body.email,
     },
   });
-  console.log('route-handler-user:', user);
-  console.log('body:', body.password, 'user:', user.password);
-  console.log(body.password === user.password);
+
   // username과 password부분을 불러와 DB에 있는 username과 password와 비교
   // 맞으면 user 정보 리턴
   // 틀리면 null 리턴

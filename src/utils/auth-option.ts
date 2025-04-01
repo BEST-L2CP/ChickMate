@@ -9,10 +9,9 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 export const authOptions: NextAuthOptions = {
   // PrismaAdapter를 사용하여 Prisma와의 연결을 설정합니다.
   adapter: PrismaAdapter(prisma),
-  // 인증 제공자를 설정합니다. 여기서는 Google 인증을 사용합니다.
+
   providers: [
     GoogleProvider({
-      // Google 클라이언트 ID와 비밀 키를 환경 변수에서 가져옵니다.
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
     }),
@@ -41,9 +40,7 @@ export const authOptions: NextAuthOptions = {
             password: credentials?.password,
           }),
         });
-        console.log('res:', res);
         const user = await res.json();
-        console.log('user:', user);
 
         if (res.ok && user) {
           return { ...user };
@@ -53,6 +50,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   // 인증 과정에서 사용할 콜백 함수를 정의합니다.
   callbacks: {
     async jwt({ token, user }) {
@@ -61,6 +59,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
+
     // 세션이 생성될 때 호출되는 콜백 함수입니다.
     async session({ session, token }) {
       if (token?.accessToken) {
@@ -72,6 +71,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  
   // 사용자 정의 로그인 페이지 경로를 설정합니다.
   // 원래의 경우라면, 로그인 페이지가 없어서 기본 로그인 페이지로 리디렉션됩니다.
   // 하지만, 우리는 사용자 정의 로그인 페이지를 사용하기 때문에 이 설정을 추가합니다.
