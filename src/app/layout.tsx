@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
-
+import localFont from 'next/font/local';
 import './global-style.css';
 import { RQProvider } from '@/provider/react-query-provider';
 import Header from '@/features/layout/header';
 import AuthProvider from '@/provider/auth-provider';
-import Footer from '@/features/layout/footer';
+
+const suit = localFont({
+  src: '../../public/fonts/SUIT-Variable.woff2',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: '🐣Chick Mate : 당신의 취업 메이트',
@@ -21,11 +25,9 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <RQProvider>
-            <div id='container' className='flex min-h-[100dvh] flex-col justify-between bg-slate-500'>
+            <div className={suit.className}>
               <Header />
-              <main className='flex-1 bg-red-200'>{children}</main>
-
-              <Footer />
+              {children}
             </div>
           </RQProvider>
         </AuthProvider>
