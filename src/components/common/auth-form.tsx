@@ -103,13 +103,13 @@ const AuthForm = () => {
         {!is_sign_up && (
           <>
             <button
-              onClick={() => signIn('google')}
+              onClick={() => signIn('google', { callbackUrl: `http://localhost:3000/${PATH.MAIN}` })}
               className='w-full rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300'
             >
               구글 로그인
             </button>
             <button
-              onClick={() => signIn('naver')}
+              onClick={() => signIn('naver', { callbackUrl: `http://localhost:3000/${PATH.MAIN}` })}
               className='w-full rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300'
             >
               네이버
