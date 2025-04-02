@@ -1,27 +1,25 @@
 import { ENV } from '@/constants/env-constants';
 import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-const url = 'https://api.openai.com/v1/audio/speech';
+const openai = new OpenAI({
+  apiKey: ENV.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 /**
  * POST 요청 함수
  */
 export const POST = async (req: NextRequest) => {
-  const { text, model, voice, speed, response_format } = await req.json();
+  const { text, model, voice, speed, response_format, instructions } = await req.json();
   try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${ENV.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        input: text,
-        voice,
-        speed,
-        response_format,
-      }),
+    const res = await openai.audio.speech.create({
+      input: text,
+      model,
+      response_format,
+      voice,
+      speed,
+      instructions,
     });
 
     if (!res.ok) {
