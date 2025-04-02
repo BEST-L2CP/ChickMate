@@ -38,13 +38,18 @@ const AuthForm = () => {
         password: String(formData.get('password')),
       };
       try {
-        await signIn('credentials', {
+        const res = await signIn('credentials', {
           ...sign_in_data,
-          callbackUrl: callback_url,
+          redirect: false,
         });
-        alert('로그인에 성공하셨습니다.');
+        if (!res.ok) {
+          throw new Error('로그인에 실패했습니다.');
+        } else {
+          alert('로그인에 성공했습니다.');
+          router.replace(PATH.ON_BOARDING);
+        }
       } catch (error) {
-        alert(error);
+        alert(error.message);
       }
     }
   };
