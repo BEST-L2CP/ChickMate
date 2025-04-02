@@ -1,4 +1,4 @@
-const ENV = {
+export const ENV = {
   DATABASE_URL: process.env.DATABASE_URL,
   BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
 
@@ -16,5 +16,3 @@ const ENV = {
 
   OPENAI_API_KEY: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 };
-
-export default ENV;
