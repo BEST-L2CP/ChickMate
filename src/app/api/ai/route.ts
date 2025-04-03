@@ -2,7 +2,7 @@ import { ENV } from '@/constants/env-constants';
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
+const open_ai = new OpenAI({
   apiKey: ENV.OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
@@ -13,7 +13,7 @@ const openai = new OpenAI({
 export const POST = async (req: NextRequest) => {
   const { text, model, voice, speed, response_format, instructions } = await req.json();
   try {
-    const res = await openai.audio.speech.create({
+    const res = await open_ai.audio.speech.create({
       input: text,
       model,
       response_format,
