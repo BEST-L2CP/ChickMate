@@ -33,29 +33,36 @@ const PRESSURE_OPTIONS = {
 Avoids showing emotional empathy or positive reactions to the candidate's responses.`,
 };
 
+const { MODEL, FORMAT } = DEFAULT_OPTIONS;
+
 export const speakText = async ({ text, type }: Props) => {
-  const options = type === 'PRESSURE' ? PRESSURE_OPTIONS : CALM_OPTIONS;
-  const res = await fetch('/api/ai', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      text,
-      model: DEFAULT_OPTIONS.MODEL,
-      response_format: DEFAULT_OPTIONS.FORMAT,
-      voice: options.VOICE,
-      speed: options.SPEED,
-      instruction: options.INSTRUCTION,
-    }),
-  });
+  const { VOICE, SPEED, INSTRUCTION } = type === 'PRESSURE' ? PRESSURE_OPTIONS : CALM_OPTIONS;
+  try {
+    // TODO : Path명 상수화 진행
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        model: MODEL,
+        response_format: FORMAT,
+        voice: VOICE,
+        speed: SPEED,
+        instruction: INSTRUCTION,
+      }),
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (res.status !== 200) {
-    // TODO : ERROR 처리
-    console.error('TTS 요청 실패', data.error || data.message);
-    return;
+    if (res.status !== 200) {
+      // TODO : ERROR 처리
+      console.error('TTS 요청 실패', data.error || data.message);
+      throw new Error(data.error || data.message);
+    }
+
+    const audio = new Audio(data.audio_url);
+    audio.play();
+  } catch (error) {
+    throw new Error('TTS 서버 에러');
   }
-
-  const audio = new Audio(data.audio_url);
-  audio.play();
 };
