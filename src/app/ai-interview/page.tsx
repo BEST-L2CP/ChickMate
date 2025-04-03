@@ -1,6 +1,6 @@
 import TTSComponent from '@/features/ai-interview/test-component';
 
-const page = () => {
+const AiInterviewPage = () => {
   return (
     <section>
       <TTSComponent />
@@ -8,4 +8,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default AiInterviewPage;
