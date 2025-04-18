@@ -14,7 +14,7 @@ const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
 const { AUTH_REQUIRED } = AUTH_MESSAGE.RESULT;
 const { DB_SERVER_ERROR, DB_REQUEST_ERROR } = DB_MESSAGE.ERROR;
 const { USER_ID_VALIDATION } = DB_MESSAGE.VALIDATION;
-const { NOT_FOUND, FORBIDDEN, PATCH_SERVER_ERROR } = INTERVIEW_HISTORY.API;
+const { NOT_FOUND, FORBIDDEN, PATCH_SERVER_ERROR, GET_ERROR } = INTERVIEW_HISTORY.API;
 
 export const POST = async (request: NextRequest, { params }: RouteParams) => {
   try {
@@ -135,6 +135,6 @@ export const GET = async (request: NextRequest, { params }: RouteParams) => {
 
     return NextResponse.json({ response });
   } catch (error) {
-    return NextResponse.json({ message: GET_SERVER_ERROR }, { status: 500 });
+    return NextResponse.json({ message: GET_ERROR }, { status: 500 });
   }
 };
