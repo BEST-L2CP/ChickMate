@@ -1,17 +1,13 @@
 import { API_HEADER, API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
-import { INTERVIEW_TYPE, INTERVIEW_VOICE_OPTIONS } from '@/constants/interview-constants';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
 import type { Message } from '@/types/message';
 import type { InterviewQnAData } from '@/types/interview';
 import type { InterviewHistory } from '@prisma/client';
 
 const { TTS, STT, INTERVIEW, INTERVIEW_START, INTERVIEW_LIVE } = ROUTE_HANDLER_PATH.AI;
-const { CALM_OPTIONS, PRESSURE_OPTIONS } = INTERVIEW_VOICE_OPTIONS;
 const { POST, PATCH } = API_METHOD;
 const { JSON_HEADER } = API_HEADER;
-
-const { PRESSURE } = INTERVIEW_TYPE;
 
 /**
  * @function textToSpeech
@@ -30,16 +26,12 @@ type TtsProps = {
 };
 
 export const postTextToSpeech = async ({ text, type }: TtsProps): Promise<string> => {
-  const { VOICE, SPEED, INSTRUCTION } = type === PRESSURE ? PRESSURE_OPTIONS : CALM_OPTIONS;
-
   const { response: audioUrl } = await fetchWithSentry(TTS, {
     method: POST,
     headers: JSON_HEADER,
     body: JSON.stringify({
       text,
-      voice: VOICE,
-      speed: SPEED,
-      instruction: INSTRUCTION,
+      type,
     }),
   });
 

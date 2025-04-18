@@ -10,21 +10,6 @@ export const INTERVIEW_TYPE_KR = {
   CALM_KR: '햇살 면접관',
 } as const;
 
-export const INTERVIEW_VOICE_OPTIONS = {
-  CALM_OPTIONS: {
-    VOICE: 'ash',
-    SPEED: 1,
-    INSTRUCTION: `Uses a friendly and gentle tone of voice.
-    Rather than challenging the candidate's answers, frequently provides emotional empathy or positive reactions.`,
-  },
-  PRESSURE_OPTIONS: {
-    VOICE: 'sage',
-    SPEED: 2.5,
-    INSTRUCTION: `Uses a firm and dry tone of voice.
-    Avoids showing emotional empathy or positive reactions to the candidate's responses.`,
-  },
-};
-
 export const INTERVIEW_PROMPT: Record<string, Message> = {
   CALM_PROMPT: {
     'role': 'system',
