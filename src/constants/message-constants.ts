@@ -115,10 +115,6 @@ export const HISTORY_MESSAGE = {
 };
 
 export const INTERVIEW_MESSAGE = {
-  NOT_FOUND: '해당 인터뷰 히스토리를 찾을 수 없습니다.',
-  FORBIDDEN: '해당 인터뷰 히스토리를 수정할 권한이 없습니다.',
-  PATCH_SERVER_ERROR: '인터뷰 히스토리 수정에 실패했습니다.',
-  GET_SERVER_ERROR: '인터뷰 히스토리를 가져오는데 실패했습니다.',
   CAMERA_ACCESS: '카메라 사용 권한이 거부되었거나 장치에 문제가 있습니다.',
   MIC_ACCESS: '마이크 사용 권한이 거부되었거나 장치에 문제가 있습니다.',
 };
@@ -126,5 +122,8 @@ export const INTERVIEW_MESSAGE = {
 export const INTERVIEW_HISTORY = {
   API: {
     GET_ERROR: '면접 기록을 가져오는데 실패했습니다.',
+    PATCH_SERVER_ERROR: '면접 기록 수정에 실패했습니다.',
+    NOT_FOUND: '해당 면접 기록을 찾을 수 없습니다.',
+    FORBIDDEN: '해당 면접 기록을 수정할 권한이 없습니다.',
   },
 };
