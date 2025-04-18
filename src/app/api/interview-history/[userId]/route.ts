@@ -22,6 +22,9 @@ const {
 const {
   API: { GET_ERROR },
 } = INTERVIEW_HISTORY;
+
+const COMPLETED_INTERVIEW_CODE = 1;
+
 export const GET = async (request: NextRequest, { params }: Props) => {
   try {
     const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
@@ -40,7 +43,7 @@ export const GET = async (request: NextRequest, { params }: Props) => {
     }
 
     const histories = await prisma.interviewHistory.findMany({
-      where: { userId: userId },
+      where: { userId: userId, status: COMPLETED_INTERVIEW_CODE },
       orderBy: { createdAt: 'desc' },
       include: {
         resume: true,
@@ -53,16 +56,15 @@ export const GET = async (request: NextRequest, { params }: Props) => {
       where: { userId },
     });
     const nextPage = pageNumber * limitNumber < totalCount ? pageNumber + 1 : null;
-
     if (!histories) return NextResponse.json({ data: [], nextPage }, { status: 200 });
     const parsedHistories = histories.map((history) => {
-      const resumeTitle = history?.resume?.title ?? null;
-
+      const resumeTitle = history.resume.title ?? null;
       return {
-        ...history,
-        resumeTitle: resumeTitle,
-        isFeedbackCompleted: history.feedback ?? false, //@TODO:어떤 형태로 올지 모르겠음.. feedback 있으면 true,없음 false
-        createdDate: formatDate({ input: history.createdAt }),
+        id: history.id,
+        title: resumeTitle,
+        interviewer: history.interviewType,
+        isFeedbackCompleted: !!history.feedback,
+        createdAt: formatDate({ input: history.createdAt }),
       };
     });
     return NextResponse.json({ data: parsedHistories, nextPage }, { status: 200 });

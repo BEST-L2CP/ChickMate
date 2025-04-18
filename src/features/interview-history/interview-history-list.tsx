@@ -1,14 +1,15 @@
 'use client';
-import { INTERVIEW_TYPE, INTERVIEW_TYPE_KR } from '@/constants/interview-constants';
-import { TABS } from '@/constants/my-page-constants';
-import clsx from 'clsx';
-import ErrorComponent from '@/components/common/error-component';
-import EmptyList from '@/features/my-page/empty-list';
-import { useInterviewHistoryInfiniteQuery } from '@/features/interview-history/hook/use-interview-history-infinite-query';
-import { useInfiniteScroll } from '@/hooks/customs/use-infinite-scroll';
-import type { InterviewHistory, User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import type { InterviewHistory, User } from '@prisma/client';
+import clsx from 'clsx';
+import { useInterviewHistoryInfiniteQuery } from '@/features/interview-history/hook/use-interview-history-infinite-query';
+import EmptyList from '@/features/my-page/empty-list';
+import { useInfiniteScroll } from '@/hooks/customs/use-infinite-scroll';
+import ErrorComponent from '@/components/common/error-component';
+import LoadingSpinner from '@/components/ui/loading-spinner';
+import { INTERVIEW_TYPE, INTERVIEW_TYPE_KR } from '@/constants/interview-constants';
+import { TABS } from '@/constants/my-page-constants';
 
 const { CALM } = INTERVIEW_TYPE;
 const { CALM_KR, PRESSURE_KR } = INTERVIEW_TYPE_KR;
@@ -32,7 +33,7 @@ const InterviewHistoryList = () => {
     hasNextPage,
   });
 
-  if (isPending) return <div className='text-center'>로딩 중..</div>;
+  if (isPending) return <LoadingSpinner />;
   if (isError) return <ErrorComponent />;
 
   const handleGetDetailList = (historyId: InterviewHistory['id']) => {
@@ -57,8 +58,8 @@ const InterviewHistoryList = () => {
               aria-disabled={history.isFeedbackCompleted}
             >
               <div>
-                <span className='text-md block font-bold text-cool-gray-900'>{history.resumeTitle}</span>
-                <span className='text-sm'>{getInterviewer(history.interviewType)}</span>
+                <span className='text-md block font-bold text-cool-gray-900'>{history.title}</span>
+                <span className='text-sm'>{getInterviewer(history.interviewer)}</span>
               </div>
               <div>
                 <span
@@ -69,7 +70,7 @@ const InterviewHistoryList = () => {
                 >
                   {history.isFeedbackCompleted ? '평가 완료' : '평가 중'}
                 </span>
-                <span className='text-sm'>{history.createdDate}</span>
+                <span className='text-sm'>{history.createdAt}</span>
               </div>
             </li>
           ))}
