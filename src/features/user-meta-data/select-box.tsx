@@ -15,7 +15,11 @@ const SelectBox = ({ options, selected = DEFAULT, onSelect }: Props) => {
   };
 
   return (
-    <select value={selected} onChange={handleSelect} className='rounded-lg border border-cool-gray-200 px-4 py-2'>
+    <select
+      value={selected}
+      onChange={handleSelect}
+      className='my-1 rounded-[8px] border border-cool-gray-200 px-4 py-2'
+    >
       <option value={DEFAULT}>선택</option>
       {options.map((option) => (
         <option key={`option_${option.name}`} value={option.value}>

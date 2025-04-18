@@ -15,10 +15,10 @@ type Props = {
 
 const SingleSelectField = ({ label, options, value, fieldKey, onSelect, error }: Props) => {
   return (
-    <div className='mb-4 flex h-14 flex-col justify-center'>
-      <label>{label}</label>
+    <div className='mb-1/2 flex min-h-14 flex-col justify-center'>
+      <label className='font-bold'>{label}</label>
       <SelectBox options={options} selected={value} onSelect={(selected) => onSelect(fieldKey, selected)} />
-      <p className='h-4 text-right text-red-500'>{error}</p>
+      <p className='h-5 text-xs text-primary-orange-600'>{error}</p>
     </div>
   );
 };
