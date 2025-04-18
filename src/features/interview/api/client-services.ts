@@ -58,33 +58,26 @@ export const postSpeechToText = async ({ blob }: SttProps): Promise<string> => {
   return transcribedText;
 };
 
-/**
- * @function getOpenAIResponse
- * @param messageList - 사용자와 모델간의 대화 리스트
- * @returns {Message[]}
- */
-type MessageListProps = {
-  messageList: Message[];
+type OpenAIProps = {
+  userMessage: string;
+  interviewId: number;
+  interviewType: string;
 };
 
-export const getOpenAIResponse = async ({
-  messageList,
-}: MessageListProps): Promise<{ messageList: Message[]; question: string }> => {
+/**
+ * Open AI API
+ * @param {String} userMessage
+ * @param {Number} interviewId
+ * @param {String} interviewType
+ * @returns
+ */
+export const postOpenAIResponse = async ({ userMessage, interviewId, interviewType }: OpenAIProps): Promise<string> => {
   const { response: question } = await fetchWithSentry(INTERVIEW, {
     method: POST,
-    body: JSON.stringify({ messageList: messageList }),
+    body: JSON.stringify({ userMessage, interviewId, interviewType }),
   });
 
-  messageList.push({
-    role: 'assistant',
-    content: [
-      {
-        type: 'text',
-        text: question,
-      },
-    ],
-  });
-  return { messageList, question };
+  return question;
 };
 
 /**
