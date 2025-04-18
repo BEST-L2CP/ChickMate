@@ -120,6 +120,7 @@ export const INTERVIEW_MESSAGE = {
   PATCH_SERVER_ERROR: '인터뷰 히스토리 수정에 실패했습니다.',
   GET_SERVER_ERROR: '인터뷰 히스토리를 가져오는데 실패했습니다.',
   CAMERA_ACCESS: '카메라 사용 권한이 거부되었거나 장치에 문제가 있습니다.',
+  MIC_ACCESS: '마이크 사용 권한이 거부되었거나 장치에 문제가 있습니다.',
 };
 
 export const INTERVIEW_HISTORY = {
