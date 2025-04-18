@@ -1,17 +1,22 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { INTERVIEW_MESSAGE } from '@/constants/message-constants';
+
+const { MIC_ACCESS } = INTERVIEW_MESSAGE;
 
 export const useAudioRecorder = () => {
   const audioRecorderRef = useRef<MediaRecorder | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+
   const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   //녹음 시작
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      const mediaRecorder = new MediaRecorder(stream, {
+      const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType: 'audio/webm;codecs=opus',
       });
       audioRecorderRef.current = mediaRecorder;
@@ -27,7 +32,7 @@ export const useAudioRecorder = () => {
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error('마이크 접근 오류:', error);
+      alert('MIC_ACCESS');
     }
   };
 
@@ -46,6 +51,26 @@ export const useAudioRecorder = () => {
       setIsRecording(false);
     });
   };
+
+  const cleanupResources = () => {
+    if (audioRecorderRef.current && isRecording) {
+      audioRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      cleanupResources();
+    };
+  }, []);
 
   return { isRecording, audioBlob, startRecording, stopRecording };
 };
