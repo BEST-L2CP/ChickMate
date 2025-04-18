@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { ENV } from '@/constants/env-constants';
 import { AI_MESSAGE, AUTH_MESSAGE } from '@/constants/message-constants';
 import type { RouteParams } from '@/types/route-params';
+import type { ChatCompletion } from 'openai/resources/chat';
 
 const { NEXTAUTH_SECRET } = ENV;
 const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
@@ -37,16 +38,16 @@ export const POST = async (request: NextRequest) => {
 
     const fullMessageList = [systemMessage, ...messageList];
 
-    const res = await openAi.chat.completions.create({
+    const completion: ChatCompletion = await openAi.chat.completions.create({
       ...DEFAULT_COMPLETION_OPTIONS,
       messages: fullMessageList,
     });
 
-    if (!res) {
+    if (!completion) {
       return NextResponse.json({ message: AI_REQUEST_FAILURE }, { status: 400 });
     }
 
-    const response = res.choices[0].message.content;
+    const response = completion.choices[0].message.content;
 
     return NextResponse.json({ response }, { status: 200 });
   } catch (error) {
