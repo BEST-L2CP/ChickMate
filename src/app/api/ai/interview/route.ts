@@ -1,13 +1,8 @@
 import { AI_MESSAGE } from '@/constants/message-constants';
+import { openAi } from '@/lib/open-ai';
 import { prisma } from '@/lib/prisma';
 import { RouteParams } from '@/types/route-params';
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
 
 const DEFAULT_COMPLETION_OPTIONS = {
   model: 'gpt-4o-mini',
@@ -38,7 +33,7 @@ export const POST = async (request: NextRequest) => {
   const { AI_REQUEST_FAILURE, AI_SERVER_ERROR } = AI_MESSAGE.AI;
   try {
     const { messageList } = await request.json();
-    const res = await openai.chat.completions.create({
+    const res = await openAi.chat.completions.create({
       ...DEFAULT_COMPLETION_OPTIONS,
       messages: messageList,
     });
