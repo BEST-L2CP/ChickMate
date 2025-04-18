@@ -10,14 +10,10 @@ const { POST, PATCH } = API_METHOD;
 const { JSON_HEADER } = API_HEADER;
 
 /**
- * @function textToSpeech
- * @param text - 서버로부터 받아온 텍스트 입력
- * @param model - 고정된 TTS 모델 ('gpt-4o-mini-tts')
- * @param voice - default = calm('ash'), pressure('sage')
- * @param speed - default = calm(1), pressure(2.5)
- * @param response_format  - format 형식 default = 'mp3'
- * @param instruction  - 목소리 형식 default = calm
- * @returns {void}
+ * Open AI TTS(Text to Speech) 통신
+ * @param {String} text 서버로부터 받아온 텍스트 입력
+ * @param {String} type 면접관 타입(햇살/불타는)
+ * @returns
  */
 
 type TtsProps = {
@@ -39,13 +35,11 @@ export const postTextToSpeech = async ({ text, type }: TtsProps): Promise<string
 };
 
 /**
- * @function speechToText
- * @param blob - 사용자 목소리 파일
- * @param model - default('whisper-1')
- * @param format - default('webm')
- * @param language - default('ko')
- * @returns {text}
+ * Open AI STT(Speech to Text) 통신
+ * @param blob 사용자 목소리 파일
+ * @returns transcribedText 변환된 텍스트
  */
+
 type SttProps = {
   blob: Blob;
 };
