@@ -27,7 +27,7 @@ const TabsField = async ({ userId }: Props) => {
   };
 
   return (
-    <section className='h-[80dvh] w-1/2 rounded-t-[8px] border'>
+    <section className='h-[80dvh] w-1/2 max-w-[628px] rounded-t-[8px] border bg-cool-gray-10'>
       <TabButtons tabCounts={tabCounts} />
       <div className='p-8'>
         <ListByTab />

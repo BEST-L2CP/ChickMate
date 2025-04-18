@@ -47,7 +47,7 @@ const TabButtons = ({ tabCounts }: Props) => {
           key={`tab_${tab.id}`}
           className={clsx(
             'text-md w-1/3 px-4 py-[14px] text-center font-bold text-cool-gray-900',
-            targetTab === tab.id && 'border-b-2 border-b-cool-gray-900'
+            targetTab === tab.id && 'border-b-2 border-b-primary-orange-600'
           )}
         >
           <button
