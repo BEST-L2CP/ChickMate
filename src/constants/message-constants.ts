@@ -29,16 +29,16 @@ export const AUTH_MESSAGE = {
 
 export const AI_MESSAGE = {
   TTS: {
-    REQUEST_FAILURE: 'TTS 요청 실패',
-    SERVER_ERROR: 'TTS 서버 에러',
+    REQUEST_FAILURE: '음성 합성(TTS) 요청 중 문제가 발생했습니다.',
+    SERVER_ERROR: 'TTS 서버에서 내부 오류가 발생했습니다.',
   },
   STT: {
-    SERVER_ERROR: 'STT 서버 에러',
-    NOT_FILE: '파일이 제공되지 않았습니다.',
+    SERVER_ERROR: '음성 인식(STT) 서버 오류가 발생했습니다.',
+    NOT_FILE: '음성 파일이 첨부되지 않았습니다.',
   },
   AI: {
-    AI_REQUEST_FAILURE: 'AI 요청 실패',
-    AI_SERVER_ERROR: 'AI 서버 에러',
+    AI_REQUEST_FAILURE: 'AI 응답을 가져오는 데 실패했습니다.',
+    AI_SERVER_ERROR: 'AI 서버 오류가 발생했습니다.',
   },
 };
 
