@@ -10,18 +10,6 @@ export const INTERVIEW_TYPE_KR = {
   CALM_KR: '햇살 면접관',
 } as const;
 
-export const INTERVIEW_CONVERT_OPTIONS = {
-  TTS_OPTIONS: {
-    MODEL: 'gpt-4o-mini-tts',
-    FORMAT: 'mp3',
-  },
-  STT_OPTIONS: {
-    MODEL: 'gpt-4o-transcribe',
-    FORMAT: 'webm',
-    LANGUAGE: 'ko',
-  },
-};
-
 export const INTERVIEW_VOICE_OPTIONS = {
   CALM_OPTIONS: {
     VOICE: 'ash',
