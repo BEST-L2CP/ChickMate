@@ -6,7 +6,7 @@ import type { SelectBoxType } from '@/types/select-box';
 type Props = {
   options: SelectBoxType[];
   selected: string;
-  onSelect: (value: SelectBoxType['name']) => void; //@TODO: 추후 type 'value'로 수정
+  onSelect: (value: SelectBoxType['value']) => void; //@TODO: 추후 type 'value'로 수정
 };
 
 const SelectBox = ({ options, selected = DEFAULT, onSelect }: Props) => {
