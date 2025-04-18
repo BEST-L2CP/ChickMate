@@ -14,11 +14,14 @@ type Params = {
   limit: number;
 };
 
-type Return = InterviewHistory & {
-  resumeTitle: Resume['title'];
+type Return = {
+  id: InterviewHistory['id'];
+  interviewer: InterviewHistory['interviewType'];
+  title: Resume['title'];
   isFeedbackCompleted: boolean;
-  createdDate: string;
+  createdAt: string;
 };
+
 export const getInterviewHistories = async ({
   userId,
   pageParam,
