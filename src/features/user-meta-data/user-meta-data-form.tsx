@@ -7,9 +7,12 @@ import useRegionsQuery from '@/features/user-meta-data/hooks/use-regions-query';
 import SingleSelectField from '@/features/user-meta-data/single-select-field';
 import { useMetaDataForm } from '@/features/user-meta-data/hooks/use-meta-data-form';
 import { USER_META_DATA_KEY } from '@/constants/user-meta-data-constants';
+import LoadingSpinner from '@/components/ui/loading-spinner';
+import { CHARACTER_HISTORY, CHARACTER_HISTORY_KEY } from '@/constants/character-constants';
 
 const { TYPE, EDUCATION, JOB, MAIN_REGION, ETC } = USER_META_DATA_KEY;
-
+const { FILL_OUT_META_DATA } = CHARACTER_HISTORY_KEY;
+const EXP = CHARACTER_HISTORY[FILL_OUT_META_DATA].amount;
 const UserMetaDataForm = () => {
   const { data } = useSession();
   const userId = data?.user?.id;
@@ -21,16 +24,16 @@ const UserMetaDataForm = () => {
 
   const { data: regions = [], isPending } = useRegionsQuery();
 
-  if (isPending || isMetaDataPending) return <div>로딩 중..</div>;
+  if (isPending || isMetaDataPending) return <LoadingSpinner />;
 
   return (
     <div>
       {isFirstTime && (
-        <span className='text-md mb-4 block text-center font-light text-primary-orange-600'>
-          작성 완료 시 500 경험치 획득!
+        <span className='mb-4 block text-center font-bold text-primary-orange-600'>
+          작성 완료 시 {EXP} 경험치 획득!
         </span>
       )}
-      <form onSubmit={handleSubmit(handleOnSubmit)} className='mx-auto w-2/3'>
+      <form onSubmit={handleSubmit(handleOnSubmit)}>
         <SingleSelectField
           label='*경력'
           options={typeData}
@@ -64,13 +67,18 @@ const UserMetaDataForm = () => {
           error={errors[MAIN_REGION]?.message}
         />
 
-        <div className='mb-4 flex h-14 flex-col justify-center'>
-          <label>기타 커리어</label>
-          <input className='rounded-lg border border-cool-gray-200 px-4 py-2' id={ETC} type='text' {...register(ETC)} />
+        <div className='mb-4 flex min-h-14 flex-col justify-center'>
+          <label className='mb-2 text-cool-gray-300'>ex. 수상이력, 자격증 등</label>
+          <input
+            className='active: rounded-[8px] border border-cool-gray-200 px-4 py-2'
+            id={ETC}
+            type='text'
+            {...register(ETC)}
+          />
         </div>
         <div className='text-center'>
           <Button variant='outline' color='dark' type='submit'>
-            설정을 완료헀어요!
+            <span className='font-bold'>설정을 완료헀어요!</span>
           </Button>
         </div>
       </form>
