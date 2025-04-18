@@ -9,17 +9,13 @@ const STT_OPTIONS = {
   LANGUAGE: 'ko',
 } as const;
 
-const FORMAT_FORMDATA = {
-  FILE: 'file',
-};
-
 /**
  * POST 요청 함수
  */
 export const POST = async (request: NextRequest) => {
   try {
     const formData = await request.formData();
-    const file = formData.get(FORMAT_FORMDATA.FILE) as File;
+    const file = formData.get('file') as File;
 
     if (!file) {
       return NextResponse.json({ message: NOT_FILE }, { status: 400 });

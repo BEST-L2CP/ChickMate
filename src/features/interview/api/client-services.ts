@@ -51,13 +51,10 @@ type SttProps = {
 };
 
 export const postSpeechToText = async ({ blob }: SttProps): Promise<string> => {
-  const FORMAT = 'webm';
-
   const formData = new FormData();
 
-  const file = new File([blob], 'recording.webm', { type: `audio/${FORMAT}` });
+  const file = new File([blob], 'recording.webm', { type: `audio/webm` });
   formData.append('file', file);
-  formData.append('format', FORMAT);
 
   const { response: transcribedText } = await fetchWithSentry(STT, {
     method: POST,
