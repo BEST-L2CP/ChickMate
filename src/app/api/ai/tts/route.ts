@@ -27,7 +27,7 @@ const INTERVIEW_VOICE_OPTIONS = {
 };
 
 /**
- * Open AI TTS 통신
+ * Open AI TTS(Text to Speech) 통신
  * @param {NextRequest} request 사용자 답변, 음성 속도, 음성 설명
  * @returns
  */

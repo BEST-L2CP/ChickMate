@@ -10,7 +10,9 @@ const STT_OPTIONS = {
 } as const;
 
 /**
- * POST 요청 함수
+ * Open AI STT(Speech to Text) 통신
+ * @param {NextRequest} request formdata = 파일, 텍스트 데이터를 함께 보내기 위해 사용하는 포맷
+ * @returns
  */
 export const POST = async (request: NextRequest) => {
   try {
