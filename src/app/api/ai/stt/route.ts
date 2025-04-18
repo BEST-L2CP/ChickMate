@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { openAi } from '@/lib/open-ai';
-import { AI_MESSAGE } from '@/constants/message-constants';
+import { AI_MESSAGE, AUTH_MESSAGE } from '@/constants/message-constants';
+import { ENV } from '@/constants/env-constants';
 
+const { NEXTAUTH_SECRET } = ENV;
+const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
 const { NOT_FILE, SERVER_ERROR } = AI_MESSAGE.STT;
 
 const STT_OPTIONS = {
@@ -16,6 +20,9 @@ const STT_OPTIONS = {
  */
 export const POST = async (request: NextRequest) => {
   try {
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
 

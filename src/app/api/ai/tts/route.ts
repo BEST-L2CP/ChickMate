@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 import { openAi } from '@/lib/open-ai';
-import { AI_MESSAGE } from '@/constants/message-constants';
+import { AI_MESSAGE, AUTH_MESSAGE } from '@/constants/message-constants';
 import { INTERVIEW_TYPE } from '@/constants/interview-constants';
+import { ENV } from '@/constants/env-constants';
 
+const { NEXTAUTH_SECRET } = ENV;
+const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
 const { REQUEST_FAILURE, SERVER_ERROR } = AI_MESSAGE.TTS;
 const { PRESSURE } = INTERVIEW_TYPE;
 
@@ -33,6 +37,9 @@ const INTERVIEW_VOICE_OPTIONS = {
  */
 export const POST = async (request: NextRequest) => {
   try {
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
+
     const { text, type } = await request.json();
     const { VOICE, SPEED, INSTRUCTION } =
       type === PRESSURE ? INTERVIEW_VOICE_OPTIONS.PRESSURE_OPTIONS : INTERVIEW_VOICE_OPTIONS.CALM_OPTIONS;
