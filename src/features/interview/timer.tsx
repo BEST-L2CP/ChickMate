@@ -82,13 +82,7 @@ const Timer = ({
           </Button>
         ) : (
           <Button variant='outline' color='dark' disabled={isAIVoicePlaying} square onClick={handleButtonClick}>
-            {!aiQuestion
-              ? '면접 시작하기'
-              : isRecording
-                ? '답변 완료하기'
-                : isAIVoicePlaying
-                  ? '질문 생성 중...'
-                  : '말하기'}
+            {isRecording ? '답변 완료하기' : isAIVoicePlaying ? '질문 생성 중...' : '말하기'}
           </Button>
         )}
       </div>

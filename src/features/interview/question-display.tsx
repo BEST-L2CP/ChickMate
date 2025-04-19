@@ -40,7 +40,7 @@ const QuestionDisplay = ({ interviewHistory, aiQuestion }: Props) => {
           {isFinalQuestionAsked
             ? '면접보시느라 고생 많으셨습니다.'
             : !aiQuestion
-              ? '면접 준비가 완료되었다면 면접 시작하기 버튼을 눌러주세요.'
+              ? '면접 준비가 완료되었다면, 말하기 버튼을 눌러 자기 소개를 해주세요.'
               : aiQuestion}
         </Typography>
       </div>
