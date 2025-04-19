@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Typography from '@/components/ui/typography';
 import { INTERVIEW_TYPE, INTERVIEW_TYPE_KR } from '@/constants/interview-constants';
+import { useInterviewStore } from '@/store/use-interview-store';
+import { INTERVIEW_LIMIT_COUNT } from '@/features/interview/hooks/use-audio-with-timer';
 import type { InterviewHistory } from '@prisma/client';
 
 const { CALM } = INTERVIEW_TYPE;
@@ -13,10 +15,12 @@ type Props = {
 
 const QuestionDisplay = ({ interviewHistory, aiQuestion }: Props) => {
   const { interviewType } = interviewHistory;
-  const INTERVIEW_IMAGE = interviewType === CALM ? 2 : 3; // TODO: 면접관 이미지 확정되면 수정
 
-  const isFinalQuestionAsked = false;
+  const interviewImage = interviewType === CALM ? 2 : 3; // TODO: 면접관 이미지 확정되면 수정
   const isInterviewTypeCalm = interviewType === CALM;
+
+  const questionIndex = useInterviewStore((state) => state.questionIndex);
+  const isFinalQuestionAsked = questionIndex >= INTERVIEW_LIMIT_COUNT;
 
   return (
     <div className='flex w-full flex-col items-start gap-4'>
@@ -24,7 +28,7 @@ const QuestionDisplay = ({ interviewHistory, aiQuestion }: Props) => {
         {/** TODO: header에 있는 이미지랑 통일 */}
         <div className='h-12 w-12 overflow-hidden rounded-full'>
           <Image
-            src={`/assets/character/header/level${INTERVIEW_IMAGE}.jpeg`}
+            src={`/assets/character/header/level${interviewImage}.jpeg`}
             width={48}
             height={48}
             alt={interviewType}

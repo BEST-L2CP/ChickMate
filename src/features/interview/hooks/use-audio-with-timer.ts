@@ -6,6 +6,8 @@ import { usePreventPageUnload } from '@/features/resume/hooks/use-prevent-page-l
 import { handleVoiceToAIFlow } from '../utils/handle-voice-to-ai-flow';
 import type { InterviewHistory } from '@prisma/client';
 
+export const INTERVIEW_LIMIT_COUNT = 3;
+
 type Props = {
   duration: number;
   interviewHistory: InterviewHistory;
@@ -17,6 +19,7 @@ export const useAudioWithTimer = ({ duration, interviewHistory }: Props) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   /** state */
+  const questionIndex = useInterviewStore((state) => state.questionIndex);
   const incrementQuestionIndex = useInterviewStore((state) => state.incrementQuestionIndex);
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [isAIVoicePlaying, setIsAIVoicePlaying] = useState(false);
@@ -48,16 +51,18 @@ export const useAudioWithTimer = ({ duration, interviewHistory }: Props) => {
     const blob = await stopRecording();
 
     stopTimer();
-    setIsAIVoicePlaying(true);
-    incrementQuestionIndex();
     setIsDirty(true);
+    incrementQuestionIndex();
 
-    const { audio, aiQuestion } = await handleVoiceToAIFlow({ blob, interviewType, interviewId });
-    setAiQuestion(aiQuestion);
-    audioRef.current = audio;
+    if (questionIndex < INTERVIEW_LIMIT_COUNT - 1) {
+      setIsAIVoicePlaying(true);
+      const { audio, aiQuestion } = await handleVoiceToAIFlow({ blob, interviewType, interviewId });
+      setAiQuestion(aiQuestion);
+      audioRef.current = audio;
 
-    audio.play();
-    audio.addEventListener('ended', () => setIsAIVoicePlaying(false));
+      audio.play();
+      audio.addEventListener('ended', () => setIsAIVoicePlaying(false));
+    }
   };
 
   usePreventPageUnload(isDirty);

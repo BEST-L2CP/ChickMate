@@ -8,6 +8,7 @@ import Typography from '@/components/ui/typography';
 import { CHARACTER_HISTORY_KEY } from '@/constants/character-constants';
 import { PATH } from '@/constants/path-constant';
 import { useExperienceUp } from '@/features/character/hooks/use-experience-up';
+import { INTERVIEW_LIMIT_COUNT } from '@/features/interview/hooks/use-audio-with-timer';
 
 const { MY_PAGE } = PATH;
 const { INTERVIEW_COMPLETION } = CHARACTER_HISTORY_KEY;
@@ -28,7 +29,6 @@ const Timer = ({
   isRecording,
   isAIVoicePlaying,
   formattedTime,
-  aiQuestion,
   startRecordingWithTimer,
   stopRecordingWithTimer,
 }: Props) => {
@@ -38,7 +38,8 @@ const Timer = ({
   const characterId = useCharacterStore((state) => state.characterId);
   const { handleExperienceUp } = useExperienceUp();
 
-  const isFinalQuestionAsked = false;
+  const questionIndex = useInterviewStore((state) => state.questionIndex);
+  const isFinalQuestionAsked = questionIndex >= INTERVIEW_LIMIT_COUNT;
 
   const handleButtonClick = () => {
     if (isRecording) {
