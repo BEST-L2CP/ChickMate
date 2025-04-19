@@ -100,6 +100,9 @@ export const DB_MESSAGE = {
     USER_ID_VALIDATION: '유저 아이디가 유효하지 않습니다.',
     JOB_POSTING_ID_VALIDATION: '채용 공고 아이디가 유효하지 않습니다.',
   },
+  SUCCESS: {
+    CREATE_SUCCESS: 'DB CREATE SUCCESS',
+  },
 };
 
 export const CHARACTER_MESSAGE = {

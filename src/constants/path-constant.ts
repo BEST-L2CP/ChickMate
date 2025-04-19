@@ -62,6 +62,9 @@ export const ROUTE_HANDLER_PATH = {
     EXPERIENCE: '/api/character/experience',
     HISTORY: (id: number) => `/api/character/history/${id}`,
   },
+  ADMIN: {
+    ROOT: '/api/admin',
+  },
 };
 
 export const QUERY_PARAMS = {
