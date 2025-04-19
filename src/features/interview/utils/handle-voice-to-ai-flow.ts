@@ -8,7 +8,7 @@ type Props = {
 
 export const handleVoiceToAIFlow = async ({ blob, interviewId, interviewType }: Props) => {
   try {
-    const userAnswer = await postSpeechToText(blob);
+    const userAnswer = await postSpeechToText({ blob, interviewId });
     const aiQuestion = await postOpenAIQuestion({ userAnswer, interviewId, interviewType });
     const audioUrl = await postTextToSpeech({ aiQuestion, interviewType });
 
