@@ -20,7 +20,7 @@ const InterviewPage = async ({ params }: RouteParams) => {
 
   if (!session || !interviewHistory) return null;
 
-  if (interviewHistory.feedback) {
+  if (interviewHistory.status === 1) {
     return <div>이미 완료된 면접입니다.</div>;
   }
 
