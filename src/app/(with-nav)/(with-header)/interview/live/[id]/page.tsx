@@ -38,7 +38,7 @@ const InterviewPage = async ({ params }: RouteParams) => {
           <CameraView />
         </div>
       </section>
-      <QuestionDisplayWithTimer session={session} interviewHistory={interviewHistory} />
+      <QuestionDisplayWithTimer interviewHistory={interviewHistory} />
     </main>
   );
 };

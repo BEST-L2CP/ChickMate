@@ -1,24 +1,21 @@
 import Image from 'next/image';
-import { InterviewHistory } from '@prisma/client';
 import Typography from '@/components/ui/typography';
-import { INTERVIEW_TYPE, INTERVIEW_TYPE_KR, PROMPT_ROLE } from '@/constants/interview-constants';
-import type { Message } from '@/types/message';
+import { INTERVIEW_TYPE, INTERVIEW_TYPE_KR } from '@/constants/interview-constants';
+import type { InterviewHistory } from '@prisma/client';
 
 const { CALM } = INTERVIEW_TYPE;
 const { CALM_KR, PRESSURE_KR } = INTERVIEW_TYPE_KR;
-const { ASSISTANT } = PROMPT_ROLE;
 
 type Props = {
-  messageList: Message[];
   interviewHistory: InterviewHistory;
+  aiQuestion: string;
 };
 
-const QuestionDisplay = ({ messageList, interviewHistory }: Props) => {
+const QuestionDisplay = ({ interviewHistory, aiQuestion }: Props) => {
   const { interviewType } = interviewHistory;
   const INTERVIEW_IMAGE = interviewType === CALM ? 2 : 3; // TODO: 면접관 이미지 확정되면 수정
 
-  const AIquestion = messageList[messageList.length - 1].content[0].text;
-  const isFinalQuestionAsked = messageList.length >= 2 && messageList[1].role === ASSISTANT;
+  const isFinalQuestionAsked = false;
   const isInterviewTypeCalm = interviewType === CALM;
 
   return (
@@ -42,9 +39,9 @@ const QuestionDisplay = ({ messageList, interviewHistory }: Props) => {
         <Typography color='gray-700' weight='normal'>
           {isFinalQuestionAsked
             ? '면접보시느라 고생 많으셨습니다.'
-            : messageList.length === 1
+            : !aiQuestion
               ? '안녕하세요. 면접 준비가 완료되었다면 간단한 자기소개 부탁드립니다.'
-              : AIquestion}
+              : aiQuestion}
         </Typography>
       </div>
     </div>

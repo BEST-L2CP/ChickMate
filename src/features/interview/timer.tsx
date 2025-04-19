@@ -22,7 +22,6 @@ type Props = {
   };
   startRecordingWithTimer: () => void;
   stopRecordingWithTimer: () => void;
-  messageList: Message[];
 };
 
 const Timer = ({
@@ -31,14 +30,13 @@ const Timer = ({
   formattedTime,
   startRecordingWithTimer,
   stopRecordingWithTimer,
-  messageList,
 }: Props) => {
   const router = useRouter();
   const resetQuestionIndex = useInterviewStore((state) => state.resetQuestionIndex);
   const characterId = useCharacterStore((state) => state.characterId);
   const { handleExperienceUp } = useExperienceUp();
 
-  const isFinalQuestionAsked = messageList.length >= 2 && messageList[1].role === 'assistant';
+  const isFinalQuestionAsked = false;
 
   const handleButtonClick = () => {
     if (isRecording) {

@@ -1,32 +1,29 @@
 'use client';
 
-import { Session } from 'next-auth';
 import Timer from '@/features/interview/timer';
 import { useAudioWithTimer } from '@/features/interview/hooks/use-audio-with-timer';
-import type { InterviewHistoryWithResume } from '@/types/interview';
 import QuestionDisplay from './question-display';
+import { InterviewHistory } from '@prisma/client';
 
 const MINUTES_IN_MS = 1 * 60 * 1000;
 
 type Props = {
-  session: Session;
-  interviewHistory: InterviewHistoryWithResume;
+  interviewHistory: InterviewHistory;
 };
 
 const QuestionDisplayWithTimer = ({ interviewHistory }: Props) => {
-  const { isRecording, isAIVoicePlaying, formattedTime, startRecordingWithTimer, stopRecordingWithTimer, messageList } =
-    useAudioWithTimer(MINUTES_IN_MS, interviewHistory);
+  const { isRecording, isAIVoicePlaying, formattedTime, aiQuestion, startRecordingWithTimer, stopRecordingWithTimer } =
+    useAudioWithTimer({ duration: MINUTES_IN_MS, interviewHistory });
 
   return (
     <section className='flex gap-5'>
-      <QuestionDisplay messageList={messageList} interviewHistory={interviewHistory} />
+      <QuestionDisplay interviewHistory={interviewHistory} aiQuestion={aiQuestion} />
       <Timer
         isRecording={isRecording}
         isAIVoicePlaying={isAIVoicePlaying}
         formattedTime={formattedTime}
         startRecordingWithTimer={startRecordingWithTimer}
         stopRecordingWithTimer={stopRecordingWithTimer}
-        messageList={messageList}
       />
     </section>
   );
