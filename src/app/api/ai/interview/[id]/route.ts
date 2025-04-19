@@ -6,7 +6,6 @@ import { getServerSession } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import type { RouteParams } from '@/types/route-params';
-import type { InterviewQnAData } from '@/types/interview';
 import type { InterviewHistory } from '@prisma/client';
 
 const { NEXTAUTH_SECRET } = ENV;
@@ -14,7 +13,7 @@ const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
 const { AUTH_REQUIRED } = AUTH_MESSAGE.RESULT;
 const { DB_SERVER_ERROR, DB_REQUEST_ERROR } = DB_MESSAGE.ERROR;
 const { USER_ID_VALIDATION } = DB_MESSAGE.VALIDATION;
-const { NOT_FOUND, FORBIDDEN, PATCH_SERVER_ERROR, GET_ERROR } = INTERVIEW_HISTORY.API;
+const { NOT_FOUND, GET_ERROR } = INTERVIEW_HISTORY.API;
 
 export const POST = async (request: NextRequest, { params }: RouteParams) => {
   try {
@@ -43,67 +42,6 @@ export const POST = async (request: NextRequest, { params }: RouteParams) => {
     return NextResponse.json({ response }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: DB_SERVER_ERROR }, { status: 500 });
-  }
-};
-
-/**
- * 인터뷰 질문/답변 업데이트하는 요청
- * @param request 인터뷰 질문/답변 1쌍
- * @param params interviewId
- *
- */
-type InterviewData = {
-  content?: InterviewQnAData | {};
-  feedback?: InterviewHistory['feedback'] | {};
-};
-
-export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
-  try {
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
-    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
-
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ message: AUTH_REQUIRED }, { status: 401 });
-    }
-
-    const id = Number(params.id);
-    const { content, feedback }: InterviewData = await request.json();
-
-    const interviewHistory = await prisma.interviewHistory.findUnique({
-      where: { id },
-    });
-
-    if (!interviewHistory) {
-      return NextResponse.json({ message: NOT_FOUND }, { status: 404 });
-    }
-    if (interviewHistory.userId && interviewHistory.userId !== session.user.id) {
-      return NextResponse.json({ message: FORBIDDEN }, { status: 403 });
-    }
-
-    const updateData: { userId: string; content?: {}; feedback?: {} } = {
-      userId: session.user.id,
-    };
-
-    // content 있을 때만 기존 content에 이어 붙이기
-    if (content) {
-      const prevContent = Array.isArray(interviewHistory.content) ? interviewHistory.content : [];
-      updateData.content = [...prevContent, content];
-    }
-
-    // feedback 있을 때만 업데이트
-    if (feedback) {
-      updateData.feedback = feedback;
-    }
-
-    const response = await prisma.interviewHistory.update({
-      where: { id },
-      data: updateData,
-    });
-
-    return NextResponse.json({ response }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ message: PATCH_SERVER_ERROR }, { status: 500 });
   }
 };
 
