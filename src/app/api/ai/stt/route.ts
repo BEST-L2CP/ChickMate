@@ -3,6 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import { openAi } from '@/lib/open-ai';
 import { AI_MESSAGE, AUTH_MESSAGE } from '@/constants/message-constants';
 import { ENV } from '@/constants/env-constants';
+import { prisma } from '@/lib/prisma';
 
 const { NEXTAUTH_SECRET } = ENV;
 const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
@@ -25,6 +26,7 @@ export const POST = async (request: NextRequest) => {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const interviewHistoryId = Number(formData.get('interviewHistoryId'));
 
     if (!file) {
       return NextResponse.json({ message: NOT_FILE }, { status: 400 });
@@ -34,6 +36,21 @@ export const POST = async (request: NextRequest) => {
       file,
       model: STT_OPTIONS.MODEL,
       language: STT_OPTIONS.LANGUAGE,
+    });
+
+    const { id } = await prisma.interviewQnA.findFirst({
+      where: {
+        interviewHistoryId,
+        OR: [{ answer: null }],
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    await prisma.interviewQnA.update({
+      where: { id },
+      data: { answer: response },
     });
 
     return NextResponse.json({ response }, { status: 200 });
