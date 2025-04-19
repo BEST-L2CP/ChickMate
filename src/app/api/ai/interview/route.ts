@@ -68,7 +68,7 @@ export const POST = async (request: NextRequest) => {
       data: {
         interviewHistoryId: interviewId,
         question: response,
-        answer: userMessage,
+        answer: userAnswer,
       },
     });
 
