@@ -2,7 +2,7 @@ import { ENV } from '@/constants/env-constants';
 import { AUTH_MESSAGE, DB_MESSAGE, HISTORY_MESSAGE } from '@/constants/message-constants';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
-import { eduMap, jobMidCdMap, locMcdMap } from '@/constants/saramin-constants';
+import { eduMap, jobMidCdMap, locMcdMap } from '@/features/admin/data/saramin-constants';
 import { prisma } from '@/lib/prisma';
 import { JobPosting } from '@prisma/client';
 
