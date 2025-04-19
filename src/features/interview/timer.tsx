@@ -1,14 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useCharacterStore } from '@/store/use-character-store';
+import { useInterviewStore } from '@/store/use-interview-store';
 import Button from '@/components/ui/button';
 import Typography from '@/components/ui/typography';
 import { CHARACTER_HISTORY_KEY } from '@/constants/character-constants';
 import { PATH } from '@/constants/path-constant';
 import { useExperienceUp } from '@/features/character/hooks/use-experience-up';
-import { useCharacterStore } from '@/store/use-character-store';
-import { useInterviewStore } from '@/store/use-interview-store';
-import type { Message } from '@/types/message';
-import { useRouter } from 'next/navigation';
 
 const { MY_PAGE } = PATH;
 const { INTERVIEW_COMPLETION } = CHARACTER_HISTORY_KEY;
@@ -32,6 +31,7 @@ const Timer = ({
   stopRecordingWithTimer,
 }: Props) => {
   const router = useRouter();
+
   const resetQuestionIndex = useInterviewStore((state) => state.resetQuestionIndex);
   const characterId = useCharacterStore((state) => state.characterId);
   const { handleExperienceUp } = useExperienceUp();
