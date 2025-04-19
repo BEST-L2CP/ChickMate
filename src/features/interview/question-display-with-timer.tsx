@@ -19,6 +19,7 @@ const QuestionDisplayWithTimer = ({ interviewHistory }: Props) => {
     <section className='flex gap-5'>
       <QuestionDisplay interviewHistory={interviewHistory} aiQuestion={aiQuestion} />
       <Timer
+        interviewHistory={interviewHistory}
         isRecording={isRecording}
         isAIVoicePlaying={isAIVoicePlaying}
         formattedTime={formattedTime}

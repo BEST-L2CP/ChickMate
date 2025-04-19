@@ -100,26 +100,13 @@ export const postInterview = async ({ resumeId, interviewType }: InterviewProps)
   return id;
 };
 
-// /** DB에 인터뷰 기록 업데이트하는 요청
-//  * @param interviewId 인터뷰 기록 ID
-//  * @param data 면접 질문/답변 1쌍
-//  */
-// type interviewHistoryProps = {
-//   interviewId: number;
-//   content?: InterviewQnAData | {};
-//   feedback?: InterviewHistory['feedback'] | {};
-// };
+/** DB에 인터뷰 기록 업데이트하는 요청
+ * @param interviewId 인터뷰 기록 ID
+ */
 
-// export const patchInterviewHistory = async ({
-//   interviewId,
-//   content = undefined,
-//   feedback = undefined,
-// }: interviewHistoryProps) => {
-//   const { response: interview } = await fetchWithSentry(INTERVIEW_LIVE(interviewId), {
-//     method: PATCH,
-//     headers: JSON_HEADER,
-//     body: JSON.stringify({ content, feedback }),
-//   });
-
-//   return interview;
-// };
+export const patchInterviewHistoryStatus = async (interviewId: number) => {
+  await fetchWithSentry(INTERVIEW_LIVE(interviewId), {
+    method: PATCH,
+    headers: JSON_HEADER,
+  });
+};

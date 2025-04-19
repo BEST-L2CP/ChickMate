@@ -9,11 +9,14 @@ import { CHARACTER_HISTORY_KEY } from '@/constants/character-constants';
 import { PATH } from '@/constants/path-constant';
 import { useExperienceUp } from '@/features/character/hooks/use-experience-up';
 import { INTERVIEW_LIMIT_COUNT } from '@/features/interview/hooks/use-audio-with-timer';
+import { InterviewHistory } from '@prisma/client';
+import { usePatchInterviewHistoryMutation } from './hooks/use-interview-history-mutation';
 
 const { MY_PAGE } = PATH;
 const { INTERVIEW_COMPLETION } = CHARACTER_HISTORY_KEY;
 
 type Props = {
+  interviewHistory: InterviewHistory;
   isRecording: boolean;
   isAIVoicePlaying: boolean;
   formattedTime: {
@@ -26,6 +29,7 @@ type Props = {
 };
 
 const Timer = ({
+  interviewHistory,
   isRecording,
   isAIVoicePlaying,
   formattedTime,
@@ -33,8 +37,8 @@ const Timer = ({
   stopRecordingWithTimer,
 }: Props) => {
   const router = useRouter();
+  const { mutate: patchInterviewHistoryMutate } = usePatchInterviewHistoryMutation();
 
-  const resetQuestionIndex = useInterviewStore((state) => state.resetQuestionIndex);
   const characterId = useCharacterStore((state) => state.characterId);
   const { handleExperienceUp } = useExperienceUp();
 
@@ -50,12 +54,16 @@ const Timer = ({
   };
 
   const handleCompletedButtonClick = async () => {
-    //@TODO: 캐릭터 아이디 있을 때만
-    if (characterId) {
-      handleExperienceUp(INTERVIEW_COMPLETION);
-      alert('경험치 획득 완료!'); //@TODO: 경험치 정의 완료된 후에 alert 리팩토링하면서 상수로 빼겠습니다.
+    if (!characterId) {
+      patchInterviewHistoryMutate(interviewHistory.id);
+      router.push(MY_PAGE);
     }
-    resetQuestionIndex();
+
+    //@TODO: 캐릭터 아이디 있을 때만
+    handleExperienceUp(INTERVIEW_COMPLETION);
+    alert('경험치 획득 완료!'); //@TODO: 경험치 정의 완료된 후에 alert 리팩토링하면서 상수로 빼겠습니다.
+
+    patchInterviewHistoryMutate(interviewHistory.id);
     router.push(MY_PAGE);
   };
 
