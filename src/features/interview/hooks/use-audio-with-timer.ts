@@ -54,9 +54,10 @@ export const useAudioWithTimer = ({ duration, interviewHistory }: Props) => {
     setIsDirty(true);
     incrementQuestionIndex();
 
+    setIsAIVoicePlaying(true);
+    const { audio, aiQuestion } = await handleVoiceToAIFlow({ blob, interviewType, interviewId });
+
     if (questionIndex < INTERVIEW_LIMIT_COUNT - 1) {
-      setIsAIVoicePlaying(true);
-      const { audio, aiQuestion } = await handleVoiceToAIFlow({ blob, interviewType, interviewId });
       setAiQuestion(aiQuestion);
       audioRef.current = audio;
 
