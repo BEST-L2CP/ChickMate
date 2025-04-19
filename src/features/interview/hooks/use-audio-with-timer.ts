@@ -6,8 +6,6 @@ import { usePreventPageUnload } from '@/features/resume/hooks/use-prevent-page-l
 import { handleVoiceToAIFlow } from '../utils/handle-voice-to-ai-flow';
 import type { InterviewHistory } from '@prisma/client';
 
-const INTERVIEW_LIMIT_COUNT = 7;
-
 type Props = {
   duration: number;
   interviewHistory: InterviewHistory;
@@ -47,9 +45,11 @@ export const useAudioWithTimer = ({ duration, interviewHistory }: Props) => {
 
   // 녹음 중단 (사용자 음성 -> 텍스트 변환 + DB에 저장)
   const stopRecordingWithTimer = async () => {
-    stopTimer();
     const blob = await stopRecording();
+
+    stopTimer();
     setIsAIVoicePlaying(true);
+    incrementQuestionIndex();
     setIsDirty(true);
 
     const { audio, aiQuestion } = await handleVoiceToAIFlow({ blob, interviewType, interviewId });
@@ -57,6 +57,7 @@ export const useAudioWithTimer = ({ duration, interviewHistory }: Props) => {
     audioRef.current = audio;
 
     audio.play();
+    audio.addEventListener('ended', () => setIsAIVoicePlaying(false));
   };
 
   usePreventPageUnload(isDirty);
