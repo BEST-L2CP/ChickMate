@@ -11,6 +11,8 @@ const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
 const { AI_REQUEST_FAILURE, AI_SERVER_ERROR } = AI_MESSAGE.AI;
 const { NOT_FOUND } = INTERVIEW_HISTORY.API;
 
+const INTERVIEW_LIMIT_COUNT = 3;
+
 const DEFAULT_COMPLETION_OPTIONS = {
   model: 'gpt-4o-mini',
   temperature: 1,
@@ -46,27 +48,6 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json({ message: NOT_FOUND }, { status: 404 });
     }
 
-    /** 첫번째 자기소개 답변 저장 */
-    if (interviewHistory.InterviewQnAList.length === 0) {
-      await prisma.interviewQnA.create({
-        data: {
-          interviewHistoryId: interviewId,
-          question: '자기소개를 해주세요.',
-          answer: userAnswer,
-        },
-      });
-    } else {
-      // 첫번째 이후의 답변 저장
-      const lastQnA = interviewHistory.InterviewQnAList.at(-1);
-
-      if (lastQnA) {
-        await prisma.interviewQnA.update({
-          where: { id: lastQnA.id },
-          data: { answer: userAnswer },
-        });
-      }
-    }
-
     /** 사용자 자소서 */
     const userResume = JSON.stringify(interviewHistory.resume.content);
 
@@ -100,13 +81,15 @@ export const POST = async (request: NextRequest) => {
 
     const response = completion.choices[0].message.content;
 
-    /** 질문 저장 */
-    await prisma.interviewQnA.create({
-      data: {
-        interviewHistoryId: interviewId,
-        question: response,
-      },
-    });
+    if (interviewHistory.InterviewQnAList.length < INTERVIEW_LIMIT_COUNT) {
+      /** AI 질문 저장 */
+      await prisma.interviewQnA.create({
+        data: {
+          interviewHistoryId: interviewId,
+          question: response,
+        },
+      });
+    }
 
     return NextResponse.json({ response }, { status: 200 });
   } catch (error) {

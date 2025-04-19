@@ -41,6 +41,7 @@ export const POST = async (request: NextRequest) => {
     if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
 
     const { aiQuestion, interviewType } = await request.json();
+
     const { VOICE, SPEED, INSTRUCTION } =
       interviewType === PRESSURE ? INTERVIEW_VOICE_OPTIONS.PRESSURE_OPTIONS : INTERVIEW_VOICE_OPTIONS.CALM_OPTIONS;
 
