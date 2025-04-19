@@ -1,9 +1,8 @@
 import { API_HEADER, API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
-import type { InterviewType } from '@/types/interview';
 
-const { TTS, STT, INTERVIEW, INTERVIEW_START, INTERVIEW_LIVE } = ROUTE_HANDLER_PATH.AI;
+const { TTS, STT, ROOT, INTERVIEW_START, INTERVIEW_LIVE } = ROUTE_HANDLER_PATH.AI;
 const { POST, PATCH } = API_METHOD;
 const { JSON_HEADER } = API_HEADER;
 
@@ -16,7 +15,7 @@ const { JSON_HEADER } = API_HEADER;
 
 type TtsProps = {
   aiQuestion: string;
-  interviewType: InterviewType;
+  interviewType: string;
 };
 
 export const postTextToSpeech = async ({ aiQuestion, interviewType }: TtsProps): Promise<string> => {
@@ -67,7 +66,7 @@ type OpenAIProps = {
 };
 
 export const postOpenAIQuestion = async ({ userAnswer, interviewId, interviewType }: OpenAIProps): Promise<string> => {
-  const { response: question } = await fetchWithSentry(INTERVIEW, {
+  const { response: question } = await fetchWithSentry(ROOT, {
     method: POST,
     body: JSON.stringify({ userAnswer, interviewId, interviewType }),
   });
