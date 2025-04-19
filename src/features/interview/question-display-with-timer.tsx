@@ -22,6 +22,7 @@ const QuestionDisplayWithTimer = ({ interviewHistory }: Props) => {
         isRecording={isRecording}
         isAIVoicePlaying={isAIVoicePlaying}
         formattedTime={formattedTime}
+        aiQuestion={aiQuestion}
         startRecordingWithTimer={startRecordingWithTimer}
         stopRecordingWithTimer={stopRecordingWithTimer}
       />

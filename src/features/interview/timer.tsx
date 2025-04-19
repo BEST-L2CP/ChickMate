@@ -19,6 +19,7 @@ type Props = {
     minutes: string;
     seconds: string;
   };
+  aiQuestion: string;
   startRecordingWithTimer: () => void;
   stopRecordingWithTimer: () => void;
 };
@@ -27,6 +28,7 @@ const Timer = ({
   isRecording,
   isAIVoicePlaying,
   formattedTime,
+  aiQuestion,
   startRecordingWithTimer,
   stopRecordingWithTimer,
 }: Props) => {
@@ -80,7 +82,13 @@ const Timer = ({
           </Button>
         ) : (
           <Button variant='outline' color='dark' disabled={isAIVoicePlaying} square onClick={handleButtonClick}>
-            {isRecording ? '답변 완료하기' : isAIVoicePlaying ? '질문 생성 중...' : '말하기'}
+            {!aiQuestion
+              ? '면접 시작하기'
+              : isRecording
+                ? '답변 완료하기'
+                : isAIVoicePlaying
+                  ? '질문 생성 중...'
+                  : '말하기'}
           </Button>
         )}
       </div>
