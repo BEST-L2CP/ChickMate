@@ -30,7 +30,7 @@ export const POST = async (request: NextRequest) => {
     const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
     if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
 
-    const { userMessage, interviewId, interviewType } = await request.json();
+    const { userAnswer, interviewId, interviewType } = await request.json();
 
     const interviewHistory = await prisma.interviewHistory.findUnique({
       where: { id: interviewId },
@@ -51,7 +51,7 @@ export const POST = async (request: NextRequest) => {
       content: SYSTEM_INTERVIEW_PROMPT[interviewType],
     };
 
-    const fullMessageList = [systemMessage, ...previousMessages, { role: 'user', content: userMessage }];
+    const fullMessageList = [systemMessage, ...previousMessages, { role: 'user', content: userAnswer }];
 
     const completion: ChatCompletion = await openAi.chat.completions.create({
       ...DEFAULT_COMPLETION_OPTIONS,
