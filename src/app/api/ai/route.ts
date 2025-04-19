@@ -46,7 +46,7 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json({ message: NOT_FOUND }, { status: 404 });
     }
 
-    // 첫번째 자기소개 답변 저장
+    /** 첫번째 자기소개 답변 저장 */
     if (interviewHistory.InterviewQnAList.length === 0) {
       await prisma.interviewQnA.create({
         data: {
@@ -56,6 +56,7 @@ export const POST = async (request: NextRequest) => {
         },
       });
     } else {
+      // 첫번째 이후의 답변 저장
       const lastQnA = interviewHistory.InterviewQnAList.at(-1);
 
       if (lastQnA) {
@@ -69,7 +70,7 @@ export const POST = async (request: NextRequest) => {
     /** 사용자 자소서 */
     const userResume = JSON.stringify(interviewHistory.resume.content);
 
-    /** AI 프롬프트 */
+    /** AI 시스템 설정 */
     const systemMessage: ChatCompletionMessageParam = {
       role: 'system',
       content: SYSTEM_INTERVIEW_PROMPT[interviewType] + userResume,
@@ -99,6 +100,7 @@ export const POST = async (request: NextRequest) => {
 
     const response = completion.choices[0].message.content;
 
+    /** 질문 저장 */
     await prisma.interviewQnA.create({
       data: {
         interviewHistoryId: interviewId,
