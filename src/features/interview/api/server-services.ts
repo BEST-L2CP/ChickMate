@@ -3,10 +3,10 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/utils/auth-option';
 import { prisma } from '@/lib/prisma';
-import { AUTH_MESSAGE, INTERVIEW_MESSAGE } from '@/constants/message-constants';
+import { AUTH_MESSAGE, INTERVIEW_HISTORY } from '@/constants/message-constants';
 
 const { AUTH_REQUIRED } = AUTH_MESSAGE.RESULT;
-const { GET_SERVER_ERROR } = INTERVIEW_MESSAGE;
+const { GET_ERROR } = INTERVIEW_HISTORY.API;
 
 /**
  * 원하는 인터뷰 기록 불러오기 요청
@@ -24,17 +24,10 @@ export const getInterviewHistory = async (interviewId: number) => {
         userId: session.user.id,
         id: interviewId,
       },
-      include: {
-        resume: {
-          select: {
-            content: true,
-          },
-        },
-      },
     });
 
     return response;
   } catch (error) {
-    throw new Error(GET_SERVER_ERROR);
+    throw new Error(GET_ERROR);
   }
 };
