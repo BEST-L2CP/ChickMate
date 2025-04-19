@@ -36,12 +36,17 @@ export const postTextToSpeech = async ({ aiQuestion, interviewType }: TtsProps):
  * @param blob 사용자 목소리 파일
  * @returns transcribedText 변환된 텍스트
  */
+type STTProps = {
+  blob: Blob;
+  interviewId: number;
+};
 
-export const postSpeechToText = async (blob: Blob): Promise<string> => {
+export const postSpeechToText = async ({ blob, interviewId }: STTProps): Promise<string> => {
   const formData = new FormData();
 
   const file = new File([blob], 'recording.webm', { type: `audio/webm` });
   formData.append('file', file);
+  formData.append('interviewHistoryId', String(interviewId));
 
   const { response: transcribedText } = await fetchWithSentry(STT, {
     method: POST,
