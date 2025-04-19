@@ -33,23 +33,29 @@ export const POST = async (request: NextRequest) => {
 
     const interviewHistory = await prisma.interviewHistory.findUnique({
       where: { id: interviewId },
-      include: { InterviewQnAList: true },
+      include: { InterviewQnAList: true, resume: true },
     });
 
     if (!interviewHistory) {
       return NextResponse.json({ message: NOT_FOUND }, { status: 404 });
     }
 
-    const previousMessages = interviewHistory.InterviewQnAList.flatMap((item) => [
-      { role: 'assistant', content: item.question ?? '' },
-      { role: 'user', content: item.answer ?? '' },
-    ]);
+    /** 사용자 자소서 */
+    const userResume = JSON.stringify(interviewHistory.resume.content);
 
+    /** AI 프롬프트 */
     const systemMessage = {
       role: 'system',
       content: SYSTEM_INTERVIEW_PROMPT[interviewType],
     };
 
+    /** 이전 대화 내용 */
+    const previousMessages = interviewHistory.InterviewQnAList.flatMap((item) => [
+      { role: 'user', content: item.answer ?? '' },
+      { role: 'assistant', content: item.question ?? '' },
+    ]);
+
+    /** 최종적으로 AI에게 전달할 메시지 */
     const fullMessageList = [systemMessage, ...previousMessages, { role: 'user', content: userAnswer }];
 
     const completion: ChatCompletion = await openAi.chat.completions.create({
