@@ -4,7 +4,7 @@ import { openAi } from '@/lib/open-ai';
 import { prisma } from '@/lib/prisma';
 import { ENV } from '@/constants/env-constants';
 import { AI_MESSAGE, AUTH_MESSAGE, INTERVIEW_HISTORY } from '@/constants/message-constants';
-import type { ChatCompletion } from 'openai/resources/chat';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat';
 
 const { NEXTAUTH_SECRET } = ENV;
 const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
@@ -44,21 +44,25 @@ export const POST = async (request: NextRequest) => {
     const userResume = JSON.stringify(interviewHistory.resume.content);
 
     /** AI 프롬프트 */
-    const systemMessage = {
+    const systemMessage: ChatCompletionMessageParam = {
       role: 'system',
       content: SYSTEM_INTERVIEW_PROMPT[interviewType],
     };
 
     /** 이전 대화 내용 */
-    const previousMessages = interviewHistory.InterviewQnAList.flatMap((item) => [
+    const previousMessages: ChatCompletionMessageParam[] = interviewHistory.InterviewQnAList.flatMap((item) => [
       { role: 'user', content: item.answer ?? '' },
       { role: 'assistant', content: item.question ?? '' },
     ]);
 
     /** 최종적으로 AI에게 전달할 메시지 */
-    const fullMessageList = [systemMessage, ...previousMessages, { role: 'user', content: userAnswer }];
+    const fullMessageList: ChatCompletionMessageParam[] = [
+      systemMessage,
+      ...previousMessages,
+      { role: 'user', content: userAnswer },
+    ];
 
-    const completion: ChatCompletion = await openAi.chat.completions.create({
+    const completion = await openAi.chat.completions.create({
       ...DEFAULT_COMPLETION_OPTIONS,
       messages: fullMessageList,
     });
