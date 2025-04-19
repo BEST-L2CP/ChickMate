@@ -6,7 +6,6 @@ import { getServerSession } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import type { RouteParams } from '@/types/route-params';
-import type { InterviewHistory } from '@prisma/client';
 
 const { NEXTAUTH_SECRET } = ENV;
 const { EXPIRED_TOKEN } = AUTH_MESSAGE.ERROR;
@@ -75,6 +74,14 @@ export const POST = async (request: NextRequest, { params }: RouteParams) => {
         userId,
         resumeId,
         interviewType,
+      },
+    });
+
+    // InterviewQnA default 질문 미리 저장
+    await prisma.interviewQnA.create({
+      data: {
+        interviewHistoryId: response.id,
+        question: '자기소개를 해주세요.',
       },
     });
 
