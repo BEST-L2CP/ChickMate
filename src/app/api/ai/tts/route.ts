@@ -40,12 +40,12 @@ export const POST = async (request: NextRequest) => {
     const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
     if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
 
-    const { text, interviewType } = await request.json();
+    const { aiQuestion, interviewType } = await request.json();
     const { VOICE, SPEED, INSTRUCTION } =
       interviewType === PRESSURE ? INTERVIEW_VOICE_OPTIONS.PRESSURE_OPTIONS : INTERVIEW_VOICE_OPTIONS.CALM_OPTIONS;
 
     const mp3 = await openAi.audio.speech.create({
-      input: text,
+      input: aiQuestion,
       model: TTS_OPTIONS.MODEL,
       response_format: TTS_OPTIONS.FORMAT,
       voice: VOICE,
