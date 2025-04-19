@@ -18,4 +18,6 @@ export const ENV = {
 
   SENTRY_DSN: process.env.SENTRY_DSN,
   SENTRY_CLIENT_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+
+  SARAMIN_API_KEY: process.env.SARAMIN_API_KEY,
 };
