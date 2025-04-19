@@ -15,36 +15,6 @@ const { DB_SERVER_ERROR, DB_REQUEST_ERROR } = DB_MESSAGE.ERROR;
 const { USER_ID_VALIDATION } = DB_MESSAGE.VALIDATION;
 const { NOT_FOUND, GET_ERROR } = INTERVIEW_HISTORY.API;
 
-export const POST = async (request: NextRequest, { params }: RouteParams) => {
-  try {
-    const { resumeId, interviewType } = await request.json();
-
-    if (resumeId !== Number(params.id)) {
-      return NextResponse.json({ message: DB_REQUEST_ERROR }, { status: 400 });
-    }
-    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
-
-    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
-
-    const session = await getServerSession(authOptions);
-    const userId = session?.user.id;
-
-    if (!session || !userId) return NextResponse.json({ message: USER_ID_VALIDATION }, { status: 401 });
-
-    const response = await prisma.interviewHistory.create({
-      data: {
-        userId,
-        resumeId,
-        interviewType,
-      },
-    });
-
-    return NextResponse.json({ response }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ message: DB_SERVER_ERROR }, { status: 500 });
-  }
-};
-
 /**
  * 원하는 인터뷰 기록 조회 요청
  */
@@ -74,5 +44,42 @@ export const GET = async (request: NextRequest, { params }: RouteParams) => {
     return NextResponse.json({ response });
   } catch (error) {
     return NextResponse.json({ message: GET_ERROR }, { status: 500 });
+  }
+};
+
+/**
+ * 면접 기록 등록하는 요청
+ * @param request resumeId 자소서 ID
+ * @param request interviewType 면접관 타입(calm / pressure)
+ * @param param1
+ * @returns
+ */
+export const POST = async (request: NextRequest, { params }: RouteParams) => {
+  try {
+    const { resumeId, interviewType } = await request.json();
+
+    if (resumeId !== Number(params.id)) {
+      return NextResponse.json({ message: DB_REQUEST_ERROR }, { status: 400 });
+    }
+    const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
+
+    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
+
+    const session = await getServerSession(authOptions);
+    const userId = session?.user.id;
+
+    if (!session || !userId) return NextResponse.json({ message: USER_ID_VALIDATION }, { status: 401 });
+
+    const response = await prisma.interviewHistory.create({
+      data: {
+        userId,
+        resumeId,
+        interviewType,
+      },
+    });
+
+    return NextResponse.json({ response }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: DB_SERVER_ERROR }, { status: 500 });
   }
 };
