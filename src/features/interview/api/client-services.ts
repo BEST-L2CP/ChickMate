@@ -1,9 +1,7 @@
 import { API_HEADER, API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
-import type { Message } from '@/types/message';
-import type { InterviewQnAData } from '@/types/interview';
-import type { InterviewHistory } from '@prisma/client';
+import type { InterviewType } from '@/types/interview';
 
 const { TTS, STT, INTERVIEW, INTERVIEW_START, INTERVIEW_LIVE } = ROUTE_HANDLER_PATH.AI;
 const { POST, PATCH } = API_METHOD;
@@ -11,23 +9,23 @@ const { JSON_HEADER } = API_HEADER;
 
 /**
  * Open AI TTS(Text to Speech) 통신
- * @param {String} text 서버로부터 받아온 텍스트 입력
- * @param {String} type 면접관 타입(햇살/불타는)
+ * @param {String} aiQuestion AI가 제공한 질문
+ * @param {String} interviewType 인터뷰 타입(calm / pressure)
  * @returns
  */
 
 type TtsProps = {
-  text: string;
-  type: string;
+  aiQuestion: string;
+  interviewType: InterviewType;
 };
 
-export const postTextToSpeech = async ({ text, type }: TtsProps): Promise<string> => {
+export const postTextToSpeech = async ({ aiQuestion, interviewType }: TtsProps): Promise<string> => {
   const { response: audioUrl } = await fetchWithSentry(TTS, {
     method: POST,
     headers: JSON_HEADER,
     body: JSON.stringify({
-      text,
-      type,
+      aiQuestion,
+      interviewType,
     }),
   });
 
@@ -40,11 +38,7 @@ export const postTextToSpeech = async ({ text, type }: TtsProps): Promise<string
  * @returns transcribedText 변환된 텍스트
  */
 
-type SttProps = {
-  blob: Blob;
-};
-
-export const postSpeechToText = async ({ blob }: SttProps): Promise<string> => {
+export const postSpeechToText = async (blob: Blob): Promise<string> => {
   const formData = new FormData();
 
   const file = new File([blob], 'recording.webm', { type: `audio/webm` });
@@ -58,23 +52,24 @@ export const postSpeechToText = async ({ blob }: SttProps): Promise<string> => {
   return transcribedText;
 };
 
+/**
+ * Open AI API 통신
+ * @param {String} userAnswer  사용자 답변
+ * @param {Number} interviewId 인텨뷰 히스토리 ID
+ * @param {String} interviewType 인터뷰 타입(calm / pressure)
+ * @returns
+ */
+
 type OpenAIProps = {
-  userMessage: string;
+  userAnswer: string;
   interviewId: number;
   interviewType: string;
 };
 
-/**
- * Open AI API
- * @param {String} userMessage
- * @param {Number} interviewId
- * @param {String} interviewType
- * @returns
- */
-export const postOpenAIResponse = async ({ userMessage, interviewId, interviewType }: OpenAIProps): Promise<string> => {
+export const postOpenAIQuestion = async ({ userAnswer, interviewId, interviewType }: OpenAIProps): Promise<string> => {
   const { response: question } = await fetchWithSentry(INTERVIEW, {
     method: POST,
-    body: JSON.stringify({ userMessage, interviewId, interviewType }),
+    body: JSON.stringify({ userAnswer, interviewId, interviewType }),
   });
 
   return question;
@@ -83,7 +78,7 @@ export const postOpenAIResponse = async ({ userMessage, interviewId, interviewTy
 /**
  * DB에 인터뷰 기록 등록하는 요청
  * @param resumeId 자소서 ID
- * @param interviewType
+ * @param interviewType 인터뷰 타입(calm / pressure)
  * @returns id 인터뷰 ID
  */
 type InterviewProps = {
@@ -106,26 +101,26 @@ export const postInterview = async ({ resumeId, interviewType }: InterviewProps)
   return id;
 };
 
-/** DB에 인터뷰 기록 업데이트하는 요청
- * @param interviewId 인터뷰 기록 ID
- * @param data 면접 질문/답변 1쌍
- */
-type interviewHistoryProps = {
-  interviewId: number;
-  content?: InterviewQnAData | {};
-  feedback?: InterviewHistory['feedback'] | {};
-};
+// /** DB에 인터뷰 기록 업데이트하는 요청
+//  * @param interviewId 인터뷰 기록 ID
+//  * @param data 면접 질문/답변 1쌍
+//  */
+// type interviewHistoryProps = {
+//   interviewId: number;
+//   content?: InterviewQnAData | {};
+//   feedback?: InterviewHistory['feedback'] | {};
+// };
 
-export const patchInterviewHistory = async ({
-  interviewId,
-  content = undefined,
-  feedback = undefined,
-}: interviewHistoryProps) => {
-  const { response: interview } = await fetchWithSentry(INTERVIEW_LIVE(interviewId), {
-    method: PATCH,
-    headers: JSON_HEADER,
-    body: JSON.stringify({ content, feedback }),
-  });
+// export const patchInterviewHistory = async ({
+//   interviewId,
+//   content = undefined,
+//   feedback = undefined,
+// }: interviewHistoryProps) => {
+//   const { response: interview } = await fetchWithSentry(INTERVIEW_LIVE(interviewId), {
+//     method: PATCH,
+//     headers: JSON_HEADER,
+//     body: JSON.stringify({ content, feedback }),
+//   });
 
-  return interview;
-};
+//   return interview;
+// };
