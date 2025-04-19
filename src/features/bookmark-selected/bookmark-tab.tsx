@@ -1,11 +1,18 @@
 import { Star } from '@/components/icons/star';
 import Typography from '@/components/ui/typography';
 import { JobPosting, UserSelectedJob } from '@prisma/client';
-import { formatDate } from '@/utils/format-date';
 import { formatRemainDay } from '@/utils/format-remain-day';
 import clsx from 'clsx';
 import Button from '@/components/ui/button';
 import { useBookmarkMutation } from '@/features/job/hooks/use-bookmark-mutation';
+import { formatTimestamp } from '@/utils/format-timestamp';
+
+const experienceType: Record<number, string> = {
+  0: '경력무관',
+  1: '신입',
+  2: '경력',
+  3: '신입/경력',
+};
 
 type Props = {
   bookmark: UserSelectedJob & { jobPosting: JobPosting };
@@ -18,22 +25,28 @@ const BookmarkTab = ({ bookmark, index, length, userId }: Props) => {
     jobPostingId: bookmark.jobPostingId,
     userId,
   });
-  const postedAtDate = formatDate({ input: bookmark.jobPosting.postedAt });
-  const expiredAtDate = formatDate({ input: bookmark.jobPosting.expiredAt });
-  const remainDay = formatRemainDay(bookmark.jobPosting.expiredAt);
+
+  const { jobPosting } = bookmark;
+  const { companyName, positionTitle, experienceCode } = jobPosting;
+
+  const postedAtDate = formatTimestamp({ input: jobPosting.openingTimestamp });
+  const expiredAtDate = formatTimestamp({ input: jobPosting.expirationTimestamp });
+  const remainDay = formatRemainDay(jobPosting.expirationTimestamp);
+
   const handleDeleteBookmark = async () => {
     /* TODO: alert 로직 구현 */
     bookmarkMutate(true);
   };
+
   return (
     <li className={clsx('flex flex-col items-center py-4', length !== index + 1 && 'border-b')}>
       <div className='flex w-full flex-row items-start justify-between'>
         <div>
           <Typography size='sm' color='gray-500' weight='bold'>
-            {bookmark.jobPosting.company}
+            {companyName}
           </Typography>
           <Typography weight='bold' size='lg' lineClamp='1'>
-            {bookmark.jobPosting.title}
+            {positionTitle}
           </Typography>
         </div>
         <button type='button' onClick={handleDeleteBookmark} aria-label='북마크 버튼'>
@@ -43,7 +56,7 @@ const BookmarkTab = ({ bookmark, index, length, userId }: Props) => {
       <div className='flex w-full flex-row items-center justify-between'>
         <div className='flex flex-row gap-6'>
           <Typography size='xs' color='gray-500'>
-            {bookmark.jobPosting.experienceType}
+            {experienceType[experienceCode]}
           </Typography>
           <Typography size='xs' color='gray-500'>
             {postedAtDate}~{expiredAtDate}

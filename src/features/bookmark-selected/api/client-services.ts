@@ -1,7 +1,7 @@
 import { API_HEADER, API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
-import { JobPosting, User, UserSelectedJob } from '@prisma/client';
+import { JobPosting, UserSelectedJob } from '@prisma/client';
 
 const { BOOKMARK } = ROUTE_HANDLER_PATH.JOB;
 const { GET } = API_METHOD;

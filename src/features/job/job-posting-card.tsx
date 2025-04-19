@@ -3,21 +3,21 @@
 import Card from '@/components/ui/card';
 import Typography from '@/components/ui/typography';
 import Bookmark from '@/features/job/bookmark';
-import { formatDate } from '@/utils/format-date';
 import { JobPosting } from '@prisma/client';
 import clsx from 'clsx';
 import Button from '@/components/ui/button';
 import { formatRemainDay } from '@/utils/format-remain-day';
+import { formatTimestamp } from '@/utils/format-timestamp';
 
 type Props = {
   jobPosting: JobPosting;
 };
 
 const JobPostingCard = ({ jobPosting }: Props) => {
-  const { company, title, experienceType, expiredAt, postedAt, id, url } = jobPosting;
-  const postedAtDate = formatDate({ input: postedAt });
-  const expiredAtDate = formatDate({ input: expiredAt });
-  const remainDay = formatRemainDay(expiredAt);
+  const { companyName, positionTitle, experienceName, expirationTimestamp, openingTimestamp, id, url } = jobPosting;
+  const postedAtDate = formatTimestamp({ input: openingTimestamp });
+  const expiredAtDate = formatTimestamp({ input: expirationTimestamp });
+  const remainDay = formatRemainDay(expirationTimestamp);
 
   return (
     <Card className='h-full min-w-96 p-8'>
@@ -25,17 +25,17 @@ const JobPostingCard = ({ jobPosting }: Props) => {
         <section className='h-24'>
           <div className='flex flex-row justify-between'>
             <Typography weight='bold' color='gray-500'>
-              {company}
+              {companyName}
             </Typography>
             {/* TODO: iconButton component 적용 */}
             <Bookmark jobPostingId={id} />
           </div>
           <Typography as='h3' weight='bold' lineClamp='2'>
-            {title}
+            {positionTitle}
           </Typography>
           <div className='flex flex-row items-center gap-4'>
             <Typography size='sm' color='gray-500'>
-              {experienceType}
+              {experienceName}
             </Typography>
             <Typography size='sm' color='gray-500'>
               {postedAtDate}~{expiredAtDate}
