@@ -3,7 +3,7 @@ import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
 
 const { ROOT } = ROUTE_HANDLER_PATH.ADMIN;
-const { POST } = API_METHOD;
+const { PATCH } = API_METHOD;
 
 /**
  *
@@ -11,7 +11,7 @@ const { POST } = API_METHOD;
  */
 export const postJobPostingDataToDatabase = async (): Promise<void> => {
   const { response } = await fetchWithSentry(ROOT, {
-    method: POST,
+    method: PATCH,
   });
 
   // TODO: 관리자에게 알리는 alert로 변경

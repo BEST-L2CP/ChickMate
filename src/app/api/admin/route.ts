@@ -1,5 +1,5 @@
 import { ENV } from '@/constants/env-constants';
-import { AUTH_MESSAGE, DB_MESSAGE, HISTORY_MESSAGE } from '@/constants/message-constants';
+import { AUTH_MESSAGE, DB_MESSAGE } from '@/constants/message-constants';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 import { eduMap, jobMidCdMap, locMcdMap } from '@/features/admin/data/saramin-constants';
@@ -7,7 +7,6 @@ import { prisma } from '@/lib/prisma';
 import { JobPosting } from '@prisma/client';
 
 const {
-  VALIDATION: { USER_ID_VALIDATION },
   ERROR: { DB_SERVER_ERROR },
   SUCCESS: { CREATE_SUCCESS },
 } = DB_MESSAGE;
@@ -15,9 +14,6 @@ const {
   ERROR: { EXPIRED_TOKEN },
 } = AUTH_MESSAGE;
 const { NEXTAUTH_SECRET, SARAMIN_API_KEY } = ENV;
-const {
-  VALIDATION: { QUERY_PARAMS_TYPE },
-} = HISTORY_MESSAGE;
 
 const URL = 'https://oapi.saramin.co.kr/job-search';
 const COUNT = 100;
@@ -25,13 +21,13 @@ const PAGE = '0';
 const DEFAULT_EDU_CODE = 6;
 const LIMIT_EDU_LEVEL = 5;
 
-type JobRecord = Omit<JobPosting, 'id' | 'active' | 'createdAt'>;
+type JobRecord = Omit<JobPosting, 'id' | 'createdAt'>;
 
 /**
- * POST 요청 함수
+ * PATCH 요청 함수
  */
 
-export const POST = async (request: NextRequest) => {
+export const PATCH = async (request: NextRequest) => {
   try {
     const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
     if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
@@ -78,7 +74,7 @@ export const POST = async (request: NextRequest) => {
         await new Promise((_) => setTimeout(_, 300));
       }
     }
-
+    // TODO: DB 업데이트 로직 수정
     await prisma.jobPosting.createMany({
       data: allRecords.map((record) => ({
         url: record.url,
@@ -92,8 +88,6 @@ export const POST = async (request: NextRequest) => {
         requiredEducationName: record.requiredEducationName,
         openingTimestamp: Number(record.openingTimestamp),
         expirationTimestamp: Number(record.expirationTimestamp),
-        // TODO: 타입변경 적용 후 삭제 예정
-        active: 0,
       })),
       skipDuplicates: true,
     });
