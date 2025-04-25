@@ -23,7 +23,7 @@ const SELECT_ACTIVE_TAB = {
 };
 
 const InterviewDetailField = ({ interviewId }: Props) => {
-  const [activeTab, setActiveTab] = useState<string>('feedback');
+  const [activeTab, setActiveTab] = useState<string>(SELECT_ACTIVE_TAB.FEEDBACK);
   const { data, isPending, isError } = useGetInterviewDetailQuery(interviewId);
   const { mutate: deleteInterviewMutation } = useDeleteInterviewMutation();
 
