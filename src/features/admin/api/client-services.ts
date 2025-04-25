@@ -1,6 +1,7 @@
 import { API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
+import { Notify } from 'notiflix';
 
 const { ROOT } = ROUTE_HANDLER_PATH.ADMIN;
 const { PATCH } = API_METHOD;
@@ -14,6 +15,5 @@ export const postJobPostingDataToDatabase = async (): Promise<void> => {
     method: PATCH,
   });
 
-  // TODO: 관리자에게 알리는 alert로 변경
-  alert(response.message);
+  Notify.success(response.message);
 };
