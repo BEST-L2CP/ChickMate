@@ -1,8 +1,7 @@
 'use client';
-
-import MyPageCharacter from '@/features/character/my-page-character';
 import { Session } from 'next-auth';
 import { useSearchParams } from 'next/navigation';
+import MyPageCharacter from '@/features/character/my-page-character';
 import MyInfo from '@/features/my-page/my-info';
 import InterviewDetailField from '@/features/interview-history/interview-detail-field';
 import ResumeDetailField from '@/features/resume-list/resume-detail-field';
@@ -21,6 +20,8 @@ const ViewingField = ({ session }: Props) => {
   const targetId = id ? Number(id) : null;
   const userId = session?.user.id ?? null;
   if (!userId) return null;
+  const isDetailHistory = tab === INTERVIEW_HISTORY_TAB;
+  const isDetailResume = tab === RESUME_TAB;
   return (
     <section className='flex h-[80dvh] w-1/2 flex-col'>
       {!targetId && (
@@ -33,8 +34,8 @@ const ViewingField = ({ session }: Props) => {
           </div>
         </>
       )}
-      {targetId && tab === INTERVIEW_HISTORY_TAB && <InterviewDetailField interviewId={targetId} />}
-      {targetId && tab === RESUME_TAB && <ResumeDetailField resumeId={targetId} userId={userId} />}
+      {targetId && isDetailHistory && <InterviewDetailField interviewId={targetId} />}
+      {targetId && isDetailResume && <ResumeDetailField resumeId={targetId} userId={userId} />}
     </section>
   );
 };
