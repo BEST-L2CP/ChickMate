@@ -9,7 +9,7 @@ const AdminButton = () => {
   };
   return (
     <div>
-      <Button onClick={handleOnClick}>DB CREATE</Button>
+      <Button onClick={handleOnClick}>DB PATCH</Button>
     </div>
   );
 };
