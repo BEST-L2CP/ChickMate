@@ -22,17 +22,18 @@ const {
 export const GET = async (request: NextRequest, { params }: Props): Promise<NextResponse> => {
   try {
     const { userId } = params;
-    if (!userId) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
+    if (!userId) return NextResponse.json({ message: EXPIRED_TOKEN, status: 401 }, { status: 401 });
 
     const userData = await prisma.user.findUnique({
       where: { id: userId },
     });
-    if (!userData) return NextResponse.json({ data: {} }, { status: 200 });
-    return NextResponse.json({ data: userData.userMetaData }, { status: 200 });
+    if (!userData) return NextResponse.json({ data: {}, status: 200 }, { status: 200 });
+    return NextResponse.json({ data: userData.userMetaData, status: 200 }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
         message: GET_DATA_ERROR,
+        status: 500,
       },
       {
         status: 500,
@@ -44,7 +45,7 @@ export const GET = async (request: NextRequest, { params }: Props): Promise<Next
 export const POST = async (request: NextRequest, { params }: Props): Promise<NextResponse> => {
   try {
     const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
-    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN }, { status: 401 });
+    if (!token) return NextResponse.json({ message: EXPIRED_TOKEN, status: 401 }, { status: 401 });
     const { userId } = params;
     const payload = await request.json();
     await prisma.user.update({
@@ -55,11 +56,12 @@ export const POST = async (request: NextRequest, { params }: Props): Promise<Nex
         userMetaData: payload,
       },
     });
-    return NextResponse.json({ status: 200 });
+    return NextResponse.json({ status: 200 }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
         message: POST_DATA_ERROR,
+        status: 500,
       },
       {
         status: 500,

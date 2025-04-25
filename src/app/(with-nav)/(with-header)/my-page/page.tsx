@@ -6,7 +6,7 @@ import ViewingField from '@/features/my-page/viewing-field';
 const MyPage = async () => {
   const session = await getServerSession(authOptions);
 
-  if (!session) return null;
+  if (!session) return;
 
   return (
     <article className='flex w-full items-center justify-between gap-2 px-12 py-8'>
