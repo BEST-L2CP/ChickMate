@@ -37,7 +37,7 @@ export const PATCH = async (request: NextRequest) => {
     for (const [jobCdStr, _] of Object.entries(jobMidCdMap)) {
       for (const [_n, locCodes] of Object.entries(locMcdMap)) {
         const params = new URLSearchParams({
-          'access-key': SARAMIN_API_KEY,
+          'access-key': SARAMIN_API_KEY as string,
           loc_mcd: locCodes,
           job_mid_cd: jobCdStr,
           start: PAGE,
@@ -61,6 +61,8 @@ export const PATCH = async (request: NextRequest) => {
             companyName: job.company?.detail?.name as string,
             positionTitle: pos.title as string,
             locationName: pos.location?.name as string,
+            industryName: pos.industry?.name as string,
+            keyword: job.keyword as string,
             jobMidCodeName: pos['job-mid-code']?.name as string,
             experienceCode: Number(pos['experience-level']?.code),
             experienceName: pos['experience-level']?.name as string,
@@ -74,13 +76,19 @@ export const PATCH = async (request: NextRequest) => {
         await new Promise((_) => setTimeout(_, 300));
       }
     }
-    // TODO: DB 업데이트 로직 수정
+
+    // 기존 jobPosting 데이터 전부 삭제
+    await prisma.jobPosting.deleteMany({});
+
+    // 새 데이터 삽입
     await prisma.jobPosting.createMany({
       data: allRecords.map((record) => ({
         url: record.url,
         companyName: record.companyName,
         positionTitle: record.positionTitle,
         locationName: record.locationName,
+        industryName: record.industryName,
+        keyword: record.keyword,
         jobMidCodeName: record.jobMidCodeName,
         experienceCode: record.experienceCode,
         experienceName: record.experienceName,
