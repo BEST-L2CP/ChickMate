@@ -64,8 +64,6 @@ const InterviewDetailField = ({ interviewId }: Props) => {
     }
   };
 
-  const debounceDelete = useFuncDebounce(confirmDeleteHistory, 2000);
-
   if (isPending)
     return (
       <div className='flex h-full w-full items-center justify-center'>
