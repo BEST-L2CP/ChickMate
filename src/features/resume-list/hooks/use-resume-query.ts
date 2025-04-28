@@ -11,5 +11,6 @@ export const useResumeQuery = (resumeId: number) => {
     queryKey: [RESUMES, resumeId],
     queryFn: () => getResume(resumeId),
     staleTime: MIN,
+    enabled: !!resumeId,
   });
 };

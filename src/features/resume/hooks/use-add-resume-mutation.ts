@@ -4,7 +4,6 @@ import { QUERY_KEY } from '@/constants/query-key';
 import type { ResumeData } from '@/types/resume';
 import type { Resume } from '@prisma/client';
 import type { UserType } from '@/types/DTO/user-dto';
-import { API_METHOD } from '@/constants/api-method-constants';
 
 const { RESUMES, TABS_COUNT, HISTORY } = QUERY_KEY;
 
@@ -12,8 +11,6 @@ type Props = {
   resumeId: number | null;
   data: ResumeData;
 };
-
-const { PATCH } = API_METHOD;
 
 export const useAddResumeMutation = (userId?: UserType['id']) => {
   const queryClient = useQueryClient();
@@ -36,9 +33,8 @@ export const useAddResumeMutation = (userId?: UserType['id']) => {
     onError: (error) => {
       throw error;
     },
-    onSuccess: (res) => {
-      const { type } = res;
-      if (type === PATCH) queryClient.invalidateQueries({ queryKey: [HISTORY, userId] });
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [HISTORY, userId] });
       queryClient.invalidateQueries({ queryKey: [RESUMES] });
       queryClient.invalidateQueries({ queryKey: [TABS_COUNT] });
     },

@@ -11,6 +11,7 @@ import { useInProgressDeleteMutation } from './hooks/use-in-progress-mutation';
 import { Notify } from 'notiflix';
 import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEY } from '@/constants/query-key';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 
 const { IN_PROGRESS } = QUERY_KEY;
 const {
@@ -31,6 +32,7 @@ const AlertInProgress = ({ session }: Props) => {
   const [isAlert, setIsAlert] = useState(false);
   const { data, isError, isPending } = useInProgressQuery(userId);
   const { mutate: inProgressDeleteMutate } = useInProgressDeleteMutation();
+  const debouncedDelete = useAsyncFuncDebounce(inProgressDeleteMutate);
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -53,8 +55,8 @@ const AlertInProgress = ({ session }: Props) => {
         router.push(LIVE(interviewId));
         router.refresh();
       },
-      cancelFunction: () => {
-        inProgressDeleteMutate(
+      cancelFunction: async () => {
+        await debouncedDelete(
           { interviewId, status, options: OPTIONS },
           {
             onSuccess: () => {

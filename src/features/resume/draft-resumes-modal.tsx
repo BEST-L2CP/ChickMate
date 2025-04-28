@@ -10,6 +10,7 @@ import { showNotiflixConfirm } from '@/utils/show-notiflix-confirm';
 import { useDeleteResumeMutation } from '@/features/resume/hooks/use-delete-resume-mutation';
 import DraftResumeItem from '@/features/resume/draft-resume-item';
 import type { ResumeType } from '@/types/DTO/resume-dto';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 
 const { CONFIRM } = RESUME_MESSAGE;
 const { DRAFT_RESUME } = MODAL_ID;
@@ -26,12 +27,12 @@ type Props = {
 
 const DraftResumesModal = ({ draftResumeList, isError, onLoadDraft, activeResumeId, setResumeId }: Props) => {
   const { mutate: deleteResumeMutate } = useDeleteResumeMutation(RESUME_DRAFT);
-
+  const debouncedDelete = useAsyncFuncDebounce(deleteResumeMutate);
   const handleDeleteResume = (resumeId: number) => {
     showNotiflixConfirm({
       message: CONFIRM.DELETE,
-      okFunction: () => {
-        deleteResumeMutate(resumeId);
+      okFunction: async () => {
+        await debouncedDelete(resumeId);
         if (activeResumeId === resumeId) {
           setResumeId(null);
         }

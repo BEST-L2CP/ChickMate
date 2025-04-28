@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
 import { MODAL_ID } from '@/constants/modal-id-constants';
-import { useModalStore } from '@/store/use-modal-store';
-import { useResumeForm } from '@/features/resume/hooks/use-resume-form';
-import { useDraftResumeListQuery } from '@/features/resume/hooks/use-draft-resume-list-query';
-import QuestionAnswerField from '@/features/resume/question-answer-field';
 import DraftResumesModal from '@/features/resume/draft-resumes-modal';
+import { useDraftResumeListQuery } from '@/features/resume/hooks/use-draft-resume-list-query';
+import { useResumeForm } from '@/features/resume/hooks/use-resume-form';
+import QuestionAnswerField from '@/features/resume/question-answer-field';
 import ResumeFormActionButton from '@/features/resume/resume-form-action-button';
-import type { Field } from '@/types/resume';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
+import { useModalStore } from '@/store/use-modal-store';
 import type { ResumeType } from '@/types/DTO/resume-dto';
+import type { Field } from '@/types/resume';
+import { useEffect } from 'react';
 
 type Props = {
   resume?: ResumeType;
@@ -38,7 +39,6 @@ const ResumeForm = ({ resume }: Props) => {
     handleDeleteField,
     handleSubmit,
   } = useResumeForm(resume);
-
   const { data: draftResumeList, isError, refetch } = useDraftResumeListQuery();
 
   /** function */
@@ -46,10 +46,10 @@ const ResumeForm = ({ resume }: Props) => {
     toggleModal(DRAFT_RESUME);
     refetch();
   };
+  const debouncedGetDraftList = useAsyncFuncDebounce(handleDraftResumeListClick, 500);
 
   const handleLoadDraft = (resume: ResumeType) => {
     const { id, title, content } = resume;
-
     setTitle(title);
     setFieldList(content as Field[]);
     setResumeId(id);
@@ -104,7 +104,7 @@ const ResumeForm = ({ resume }: Props) => {
           resume={resume}
           draftResumeList={draftResumeList}
           autoSaveStatus={autoSaveStatus}
-          onClick={handleDraftResumeListClick}
+          onClick={debouncedGetDraftList}
         />
       </div>
 

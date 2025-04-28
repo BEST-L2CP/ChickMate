@@ -35,10 +35,10 @@ export const GET = async (request: NextRequest, { params }: RouteParams) => {
     });
 
     if (!response) {
-      return NextResponse.json({ message: NOT_FOUND }, { status: 404 });
+      return NextResponse.json({ message: NOT_FOUND }, { status: 200 });
     }
 
-    return NextResponse.json({ response });
+    return NextResponse.json({ response }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: GET_SERVER_ERROR }, { status: 500 });
   }

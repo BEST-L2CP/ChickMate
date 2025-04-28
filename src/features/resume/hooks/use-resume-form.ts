@@ -11,6 +11,7 @@ import { defaultQuestionList } from '@/features/resume/data/default-question-lis
 import { useAddResumeMutation } from '@/features/resume/hooks/use-add-resume-mutation';
 import { usePreventPageUnload } from '@/features/resume/hooks/use-prevent-page-load';
 import useDebounce from '@/hooks/customs/use-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import { useCharacterStore } from '@/store/use-character-store';
 import type { ResumeType } from '@/types/DTO/resume-dto';
 import type { Field } from '@/types/resume';
@@ -33,7 +34,7 @@ export const useResumeForm = (resume?: ResumeType) => {
 
   const { handleExperienceUp } = useExperienceUp();
 
-  const { mutateAsync: addResumeMutateAsync } = useAddResumeMutation(userId!);
+  const { mutate: addResumeMutateAsync } = useAddResumeMutation(userId!);
 
   /** state */
   const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -78,7 +79,7 @@ export const useResumeForm = (resume?: ResumeType) => {
     try {
       const data = { title, fieldList };
 
-      await addResumeMutateAsync({ resumeId, data });
+      addResumeMutateAsync({ resumeId, data });
 
       const isAbleToGetEXP = await getCheckToGetEXP(); // 오늘 작성한 자소서 개수 체크 -> 3개 이하 -> 경험치 획득 가능
       const isReqExp = characterId;
@@ -92,7 +93,7 @@ export const useResumeForm = (resume?: ResumeType) => {
       Notify.warning(getErrorMessage(error));
     }
   };
-
+  const debouncedSubmit = useAsyncFuncDebounce(handleSubmit);
   usePreventPageUnload(isDirty);
 
   /** 자동 저장 */
@@ -128,6 +129,6 @@ export const useResumeForm = (resume?: ResumeType) => {
     handleFieldChange,
     handleAddField,
     handleDeleteField,
-    handleSubmit,
+    handleSubmit: debouncedSubmit,
   };
 };

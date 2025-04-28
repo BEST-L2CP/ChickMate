@@ -4,6 +4,7 @@ import LeftArrowIcon from '@/components/icons/left-arrow-icon';
 import Button from '@/components/ui/button';
 import LoadingSpinner from '@/components/ui/loading-spinner';
 import Typography from '@/components/ui/typography';
+import { RESUME_MESSAGE } from '@/constants/message-constants';
 import { TABS } from '@/constants/my-page-constants';
 import { PATH } from '@/constants/path-constant';
 import { QUERY_KEY } from '@/constants/query-key';
@@ -11,15 +12,23 @@ import { getMyPagePath } from '@/features/my-page/utils/get-my-page-path';
 import { useResumeQuery } from '@/features/resume-list/hooks/use-resume-query';
 import ResumeQnAItem from '@/features/resume-list/resume-qna-item';
 import { useDeleteResumeMutation } from '@/features/resume/hooks/use-delete-resume-mutation';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import type { ResumeType } from '@/types/DTO/resume-dto';
 import type { UserType } from '@/types/DTO/user-dto';
 import type { Field } from '@/types/resume';
+import { getErrorMessage } from '@/utils/get-error-message';
+import { showNotiflixConfirm } from '@/utils/show-notiflix-confirm';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Notify } from 'notiflix';
 
 const { DETAIL } = PATH.RESUME;
 const { RESUMES } = QUERY_KEY;
 const { RESUME_TAB } = TABS;
+const {
+  CONFIRM: { DELETE },
+  DELETE_REQUEST_SUCCESS,
+} = RESUME_MESSAGE;
 type Props = {
   resumeId: ResumeType['id'];
   userId: UserType['id'];
@@ -27,8 +36,31 @@ type Props = {
 
 const ResumeDetailField = ({ resumeId, userId }: Props) => {
   const { data: resume, isPending, isError } = useResumeQuery(resumeId);
-  const { mutate: deleteResumeMutate } = useDeleteResumeMutation(RESUMES, userId);
+  const { mutateAsync: deleteResumeMutate } = useDeleteResumeMutation(RESUMES, userId);
   const router = useRouter();
+  const handlePatchResume = () => {
+    router.push(DETAIL(resumeId));
+    router.refresh();
+  };
+
+  const confirmDeleteResume = () => {
+    showNotiflixConfirm({
+      message: DELETE,
+      okFunction: handleDeleteResume,
+    });
+  };
+
+  const debouncedDeleteResume = useAsyncFuncDebounce(async () => await deleteResumeMutate(resumeId));
+
+  const handleDeleteResume = async () => {
+    try {
+      await debouncedDeleteResume();
+      Notify.success(DELETE_REQUEST_SUCCESS);
+      router.replace(getMyPagePath(RESUME_TAB));
+    } catch (error) {
+      Notify.failure(getErrorMessage(error));
+    }
+  };
 
   if (isPending)
     return (
@@ -36,6 +68,7 @@ const ResumeDetailField = ({ resumeId, userId }: Props) => {
         <LoadingSpinner />
       </div>
     );
+
   if (isError)
     return (
       <div className='flex h-full w-full items-center justify-center'>
@@ -44,18 +77,6 @@ const ResumeDetailField = ({ resumeId, userId }: Props) => {
     );
 
   const resumeContent = resume.content as Field[];
-
-  const handleDeleteResume = (resumeId: ResumeType['id']) => {
-    // TODO: confirm창 적용하기
-    if (window.confirm('자기소개서를 정말로 삭제하시겠습니까?')) {
-      deleteResumeMutate(resumeId);
-    }
-  };
-
-  const handlePatchResume = (resumeId: ResumeType['id']) => {
-    router.push(DETAIL(resumeId));
-    router.refresh();
-  };
 
   return (
     <section className='flex h-[80dvh] flex-col gap-8'>
@@ -78,10 +99,10 @@ const ResumeDetailField = ({ resumeId, userId }: Props) => {
         })}
       </ul>
       <div className='flex gap-8'>
-        <Button size='fixed' onClick={() => handlePatchResume(resumeId)}>
+        <Button size='fixed' onClick={handlePatchResume}>
           수정하기
         </Button>
-        <Button size='fixed' onClick={() => handleDeleteResume(resumeId)}>
+        <Button size='fixed' onClick={confirmDeleteResume}>
           삭제하기
         </Button>
       </div>

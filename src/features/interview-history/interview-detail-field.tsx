@@ -10,7 +10,7 @@ import { useDeleteInterviewMutation } from '@/features/interview-history/hook/us
 import { useGetInterviewDetailQuery } from '@/features/interview-history/hook/use-get-interview-detail-query';
 import InterviewDetailFeedback, { FeedbackItem } from '@/features/interview-history/interview-detail-feedback';
 import InterviewDetailHistory from '@/features/interview-history/interview-detail-history';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import type { InterviewHistoryType } from '@/types/DTO/interview-history-dto';
 import { getErrorMessage } from '@/utils/get-error-message';
 import { showNotiflixConfirm } from '@/utils/show-notiflix-confirm';
@@ -39,6 +39,7 @@ const InterviewDetailField = ({ interviewId }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { data, isPending, isError, error: getError } = useGetInterviewDetailQuery(interviewId, !isDeleting);
   const { mutateAsync: deleteInterviewAsyncMutation } = useDeleteInterviewMutation();
+  const debouncedDelete = useAsyncFuncDebounce(async () => await deleteInterviewAsyncMutation(interviewId));
 
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -52,8 +53,8 @@ const InterviewDetailField = ({ interviewId }: Props) => {
 
   const handleDeleteHistory = async () => {
     try {
+      await debouncedDelete();
       setIsDeleting(true);
-      await deleteInterviewAsyncMutation(interviewId);
       Notify.success(DELETE_SUCCESS);
       router.replace(MY_PAGE);
       queryClient.invalidateQueries({ queryKey: [TABS_COUNT] });
@@ -62,8 +63,6 @@ const InterviewDetailField = ({ interviewId }: Props) => {
       Notify.failure(getErrorMessage(error));
     }
   };
-
-  const debounceDelete = useFuncDebounce(confirmDeleteHistory, 2000);
 
   if (isPending)
     return (
@@ -132,8 +131,9 @@ const InterviewDetailField = ({ interviewId }: Props) => {
         {activeTab === INTERVIEW_FEEDBACK && <InterviewDetailFeedback feedback={feedback} />}
         {activeTab === INTERVIEW_HISTORY && <InterviewDetailHistory data={data} />}
       </div>
+
       <div className='mt-auto pt-6'>
-        <Button size='fixed' onClick={debounceDelete}>
+        <Button size='fixed' onClick={confirmDeleteHistory}>
           삭제하기
         </Button>
       </div>
