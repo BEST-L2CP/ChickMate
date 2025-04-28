@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
 import { MODAL_ID } from '@/constants/modal-id-constants';
-import { useModalStore } from '@/store/use-modal-store';
-import { useResumeForm } from '@/features/resume/hooks/use-resume-form';
-import { useDraftResumeListQuery } from '@/features/resume/hooks/use-draft-resume-list-query';
-import QuestionAnswerField from '@/features/resume/question-answer-field';
 import DraftResumesModal from '@/features/resume/draft-resumes-modal';
+import { useDraftResumeListQuery } from '@/features/resume/hooks/use-draft-resume-list-query';
+import { useResumeForm } from '@/features/resume/hooks/use-resume-form';
+import QuestionAnswerField from '@/features/resume/question-answer-field';
 import ResumeFormActionButton from '@/features/resume/resume-form-action-button';
-import type { Field } from '@/types/resume';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
+import { useModalStore } from '@/store/use-modal-store';
 import type { ResumeType } from '@/types/DTO/resume-dto';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import type { Field } from '@/types/resume';
+import { useEffect } from 'react';
 
 type Props = {
   resume?: ResumeType;
@@ -40,14 +40,13 @@ const ResumeForm = ({ resume }: Props) => {
     handleSubmit,
   } = useResumeForm(resume);
   const { data: draftResumeList, isError, refetch } = useDraftResumeListQuery();
-  const debouncedSubmit = useFuncDebounce(handleSubmit, 1500);
 
   /** function */
   const handleDraftResumeListClick = () => {
     toggleModal(DRAFT_RESUME);
     refetch();
   };
-  const debouncedGetDraftList = useFuncDebounce(handleDraftResumeListClick, 500);
+  const debouncedGetDraftList = useAsyncFuncDebounce(handleDraftResumeListClick, 500);
 
   const handleLoadDraft = (resume: ResumeType) => {
     const { id, title, content } = resume;
@@ -63,7 +62,7 @@ const ResumeForm = ({ resume }: Props) => {
 
   /** UI */
   return (
-    <form onSubmit={debouncedSubmit} className='flex flex-1 flex-col gap-4'>
+    <form onSubmit={handleSubmit} className='flex flex-1 flex-col gap-4'>
       {/* 상단 고정 영역 */}
       <div className='relative w-full shrink-0'>
         <input

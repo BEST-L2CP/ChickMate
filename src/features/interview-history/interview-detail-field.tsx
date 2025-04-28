@@ -10,7 +10,7 @@ import { useDeleteInterviewMutation } from '@/features/interview-history/hook/us
 import { useGetInterviewDetailQuery } from '@/features/interview-history/hook/use-get-interview-detail-query';
 import InterviewDetailFeedback, { FeedbackItem } from '@/features/interview-history/interview-detail-feedback';
 import InterviewDetailHistory from '@/features/interview-history/interview-detail-history';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import type { InterviewHistoryType } from '@/types/DTO/interview-history-dto';
 import { getErrorMessage } from '@/utils/get-error-message';
 import { showNotiflixConfirm } from '@/utils/show-notiflix-confirm';
@@ -39,7 +39,7 @@ const InterviewDetailField = ({ interviewId }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { data, isPending, isError, error: getError } = useGetInterviewDetailQuery(interviewId, !isDeleting);
   const { mutateAsync: deleteInterviewAsyncMutation } = useDeleteInterviewMutation();
-  const debouncedDelete = useFuncDebounce(async () => await deleteInterviewAsyncMutation(interviewId));
+  const debouncedDelete = useAsyncFuncDebounce(async () => await deleteInterviewAsyncMutation(interviewId));
 
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -51,9 +51,9 @@ const InterviewDetailField = ({ interviewId }: Props) => {
     });
   };
 
-  const handleDeleteHistory = () => {
+  const handleDeleteHistory = async () => {
     try {
-      debouncedDelete();
+      await debouncedDelete();
       setIsDeleting(true);
       Notify.success(DELETE_SUCCESS);
       router.replace(MY_PAGE);

@@ -12,7 +12,7 @@ import { getMyPagePath } from '@/features/my-page/utils/get-my-page-path';
 import { useResumeQuery } from '@/features/resume-list/hooks/use-resume-query';
 import ResumeQnAItem from '@/features/resume-list/resume-qna-item';
 import { useDeleteResumeMutation } from '@/features/resume/hooks/use-delete-resume-mutation';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import type { ResumeType } from '@/types/DTO/resume-dto';
 import type { UserType } from '@/types/DTO/user-dto';
 import type { Field } from '@/types/resume';
@@ -50,12 +50,11 @@ const ResumeDetailField = ({ resumeId, userId }: Props) => {
     });
   };
 
-  const debouncedPatchResume = useFuncDebounce(handlePatchResume);
-  const debouncedDeleteResume = useFuncDebounce(async () => await deleteResumeMutate(resumeId));
+  const debouncedDeleteResume = useAsyncFuncDebounce(async () => await deleteResumeMutate(resumeId));
 
-  const handleDeleteResume = () => {
+  const handleDeleteResume = async () => {
     try {
-      debouncedDeleteResume();
+      await debouncedDeleteResume();
       Notify.success(DELETE_REQUEST_SUCCESS);
       router.replace(getMyPagePath(RESUME_TAB));
     } catch (error) {
@@ -100,7 +99,7 @@ const ResumeDetailField = ({ resumeId, userId }: Props) => {
         })}
       </ul>
       <div className='flex gap-8'>
-        <Button size='fixed' onClick={debouncedPatchResume}>
+        <Button size='fixed' onClick={handlePatchResume}>
           수정하기
         </Button>
         <Button size='fixed' onClick={confirmDeleteResume}>

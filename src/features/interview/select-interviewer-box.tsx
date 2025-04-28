@@ -6,7 +6,7 @@ import { INTERVIEW_TYPE } from '@/constants/interview-constants';
 import { PATH } from '@/constants/path-constant';
 import { postInterview } from '@/features/interview/api/client-services';
 import useResumeStore from '@/features/interview/hooks/use-resume-store';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 import { useInterviewStore } from '@/store/use-interview-store';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -33,7 +33,7 @@ const SelectInterviewerBox = () => {
       router.push(`${LIVE(interviewId)}`);
     }
   };
-  const debouncedStartInterview = useFuncDebounce(handleClickSetInterviewType, 2000);
+  const debouncedStartInterview = useAsyncFuncDebounce(handleClickSetInterviewType, 2000);
 
   return (
     <section className='flex flex-row'>

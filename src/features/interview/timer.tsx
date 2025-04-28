@@ -15,7 +15,7 @@ import type { InterviewHistory } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Notify } from 'notiflix';
 import { useRouter } from 'next/navigation';
-import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
+import { useAsyncFuncDebounce } from '@/hooks/customs/use-async-func-debounce';
 
 const { MY_PAGE } = PATH;
 const { INTERVIEW_COMPLETION } = CHARACTER_HISTORY_KEY;
@@ -86,7 +86,7 @@ const Timer = ({
   const questionIndex = useInterviewStore((state) => state.questionIndex);
   const isFinalQuestionAsked = questionIndex >= INTERVIEW_LIMIT_COUNT;
 
-  const debouncedCompleteInterview = useFuncDebounce(handleCompletedButtonClick, 1500);
+  const debouncedCompleteInterview = useAsyncFuncDebounce(handleCompletedButtonClick, 1500);
   if (InterviewHistoryError) {
     alert(InterviewHistoryError.message);
   }
