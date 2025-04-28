@@ -13,10 +13,9 @@ import { useCharacterStore } from '@/store/use-character-store';
 import { useInterviewStore } from '@/store/use-interview-store';
 import type { InterviewHistory } from '@prisma/client';
 import { useQueryClient } from '@tanstack/react-query';
-
 import { Notify } from 'notiflix';
-
 import { useRouter } from 'next/navigation';
+import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
 
 const { MY_PAGE } = PATH;
 const { INTERVIEW_COMPLETION } = CHARACTER_HISTORY_KEY;
@@ -50,25 +49,14 @@ const Timer = ({
   const setCompleted = useInterviewStore((state) => state.setCompleted);
   const { handleExperienceUp } = useExperienceUp();
 
-  const questionIndex = useInterviewStore((state) => state.questionIndex);
-  const isFinalQuestionAsked = questionIndex >= INTERVIEW_LIMIT_COUNT;
-
-  {
-    /** TODO: 에러 처리 알림에 대한 고민 필요 */
-  }
-  if (InterviewHistoryError) {
-    alert(InterviewHistoryError.message);
-  }
-  if (aiFeedbackError) {
-    alert(aiFeedbackError.message);
-  }
-
   const handleButtonClick = () => {
-    if (isRecording) {
-      stopRecordingWithTimer();
-    } else {
-      startRecordingWithTimer();
-    }
+    setTimeout(() => {
+      if (isRecording) {
+        stopRecordingWithTimer();
+      } else {
+        startRecordingWithTimer();
+      }
+    }, 1000); // 바로 대답하기 클릭 시 stt오류 발생하여 delay를 걸어둠 -> 최소 1초는 지나야 대답하기 버튼 클릭할 수 있음
   };
 
   const handleCompletedButtonClick = async () => {
@@ -95,6 +83,17 @@ const Timer = ({
     }
   };
 
+  const questionIndex = useInterviewStore((state) => state.questionIndex);
+  const isFinalQuestionAsked = questionIndex >= INTERVIEW_LIMIT_COUNT;
+
+  const debouncedCompleteInterview = useFuncDebounce(handleCompletedButtonClick, 1500);
+  if (InterviewHistoryError) {
+    alert(InterviewHistoryError.message);
+  }
+  if (aiFeedbackError) {
+    alert(aiFeedbackError.message);
+  }
+
   return (
     <div className='flex h-[220px] w-[526px] flex-shrink-0 flex-col items-center justify-center gap-4 rounded-lg border border-cool-gray-200 bg-cool-gray-10 p-8'>
       <div className='flex flex-col items-center'>
@@ -114,7 +113,7 @@ const Timer = ({
       </div>
       <div>
         {isFinalQuestionAsked ? (
-          <Button square onClick={handleCompletedButtonClick}>
+          <Button square onClick={debouncedCompleteInterview}>
             면접 완료하기
           </Button>
         ) : (
