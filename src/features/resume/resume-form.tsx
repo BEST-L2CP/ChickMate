@@ -10,6 +10,7 @@ import DraftResumesModal from '@/features/resume/draft-resumes-modal';
 import ResumeFormActionButton from '@/features/resume/resume-form-action-button';
 import type { Field } from '@/types/resume';
 import type { ResumeType } from '@/types/DTO/resume-dto';
+import { useFuncDebounce } from '@/hooks/customs/use-func-debounce';
 
 type Props = {
   resume?: ResumeType;
@@ -38,18 +39,18 @@ const ResumeForm = ({ resume }: Props) => {
     handleDeleteField,
     handleSubmit,
   } = useResumeForm(resume);
-
   const { data: draftResumeList, isError, refetch } = useDraftResumeListQuery();
+  const debouncedSubmit = useFuncDebounce(handleSubmit, 1500);
 
   /** function */
   const handleDraftResumeListClick = () => {
     toggleModal(DRAFT_RESUME);
     refetch();
   };
+  const debouncedGetDraftList = useFuncDebounce(handleDraftResumeListClick, 500);
 
   const handleLoadDraft = (resume: ResumeType) => {
     const { id, title, content } = resume;
-
     setTitle(title);
     setFieldList(content as Field[]);
     setResumeId(id);
@@ -62,7 +63,7 @@ const ResumeForm = ({ resume }: Props) => {
 
   /** UI */
   return (
-    <form onSubmit={handleSubmit} className='flex flex-1 flex-col gap-4'>
+    <form onSubmit={debouncedSubmit} className='flex flex-1 flex-col gap-4'>
       {/* 상단 고정 영역 */}
       <div className='relative w-full shrink-0'>
         <input
@@ -104,7 +105,7 @@ const ResumeForm = ({ resume }: Props) => {
           resume={resume}
           draftResumeList={draftResumeList}
           autoSaveStatus={autoSaveStatus}
-          onClick={handleDraftResumeListClick}
+          onClick={debouncedGetDraftList}
         />
       </div>
 
