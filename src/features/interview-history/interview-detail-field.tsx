@@ -39,6 +39,7 @@ const InterviewDetailField = ({ interviewId }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { data, isPending, isError, error: getError } = useGetInterviewDetailQuery(interviewId, !isDeleting);
   const { mutateAsync: deleteInterviewAsyncMutation } = useDeleteInterviewMutation();
+  const debouncedDelete = useFuncDebounce(async () => await deleteInterviewAsyncMutation(interviewId));
 
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -50,10 +51,10 @@ const InterviewDetailField = ({ interviewId }: Props) => {
     });
   };
 
-  const handleDeleteHistory = async () => {
+  const handleDeleteHistory = () => {
     try {
+      debouncedDelete();
       setIsDeleting(true);
-      await deleteInterviewAsyncMutation(interviewId);
       Notify.success(DELETE_SUCCESS);
       router.replace(MY_PAGE);
       queryClient.invalidateQueries({ queryKey: [TABS_COUNT] });
@@ -132,8 +133,9 @@ const InterviewDetailField = ({ interviewId }: Props) => {
         {activeTab === INTERVIEW_FEEDBACK && <InterviewDetailFeedback feedback={feedback} />}
         {activeTab === INTERVIEW_HISTORY && <InterviewDetailHistory data={data} />}
       </div>
+
       <div className='mt-auto pt-6'>
-        <Button size='fixed' onClick={debounceDelete}>
+        <Button size='fixed' onClick={confirmDeleteHistory}>
           삭제하기
         </Button>
       </div>
