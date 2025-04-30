@@ -2,7 +2,7 @@ import { API_HEADER, API_METHOD } from '@/constants/api-method-constants';
 import { ROUTE_HANDLER_PATH } from '@/constants/path-constant';
 import type { ResumeData } from '@/types/resume';
 import { fetchWithSentry } from '@/utils/fetch-with-sentry';
-import type { Resume } from '@prisma/client';
+import { ResumeType } from '@/types/DTO/resume-dto';
 
 type Props = {
   data: ResumeData;
@@ -14,7 +14,7 @@ const { GET, POST, PATCH, DELETE } = API_METHOD;
 const { JSON_HEADER } = API_HEADER;
 
 type SubmitParams = {
-  resumeId: Resume['id'];
+  resumeId: ResumeType['id'];
   type: typeof POST | typeof PATCH;
 };
 /**
@@ -64,7 +64,7 @@ export const autoSaveResume = async ({ resumeId, data }: Props) => {
  * @param {Number} status 저장 상태(등록/임시 저장)
  * @returns resumes 상태에 따른 자소서 리스트
  */
-export const getResumeList = async (status: number): Promise<Resume[]> => {
+export const getResumeList = async (status: number): Promise<ResumeType[]> => {
   const url = `${ROOT}?status=${status}`;
 
   const { response: resumeList } = await fetchWithSentry(url, {
@@ -78,42 +78,37 @@ type ResumeListProps = {
   status: number;
   pageParam: number;
   limit: number;
+  reqType: string;
 };
 
-type PaginatedResumeListResponse = {
-  resumeList: Resume[];
-  nextPage: number | null;
-};
 /**
- *
- * @param {Number} status 저장 상태(등록/임시 저장)
- * @param {Number} pageParam 가져올 페이지 번호
- * @param {Number} limit 한 페이지에 표시할 항목 수
- * @returns resumeList 자소서 목록
- * @returns nextPage 다음 페이지
+ * 특정 개수 단위로 자소서 data를 서버에서 받아옴
+ * @param params - { status : 받아올 자소서의 상태 , pageParams : 초기 page, limit : 받아올 데이터의 개수 }
+ * @returns page,다음 page, 해당 page에 들어있는 data
  */
-export const getPaginatedResumeList = async ({
-  status,
-  pageParam,
-  limit,
-}: ResumeListProps): Promise<PaginatedResumeListResponse> => {
-  const url = `${ROOT}?status=${status}&page=${pageParam}&limit=${limit}`;
+export const getResumeListByInfinite = async (params: ResumeListProps) => {
+  const { pageParam, limit, status, reqType } = params;
+  const queryParams = new URLSearchParams({
+    page: pageParam.toString(),
+    limit: limit.toString(),
+    status: status.toString(),
+    reqType,
+  });
 
-  const { response: resumeList } = await fetchWithSentry(url, {
+  const url = `${ROOT}?${queryParams}`;
+
+  const data: { response: ResumeType[]; nextPage: number | null } = await fetchWithSentry(url, {
     method: GET,
   });
 
-  const hasNextPage = resumeList.length === limit;
-  const nextPage = hasNextPage ? pageParam + 1 : null;
-
-  return { resumeList, nextPage };
+  return data;
 };
 
 /**
  * DB에서 원하는 자소서를 불러오는 요청
  * @returns {Array} draftResumes 임시 저장된 자소서 리스트
  */
-export const getResume = async (resumeId: number): Promise<Resume> => {
+export const getResume = async (resumeId: number): Promise<ResumeType> => {
   const { response: resume } = await fetchWithSentry(DETAIL(resumeId), {
     method: GET,
   });
