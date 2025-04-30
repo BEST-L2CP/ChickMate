@@ -58,7 +58,6 @@ const ResumeAllModal = () => {
                   setResume(resume.id);
                   toggleModal(ALL_RESUME_LIST);
                 }}
-                hrOption={false}
               />
             );
           })}
