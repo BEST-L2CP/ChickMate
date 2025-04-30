@@ -78,6 +78,7 @@ type ResumeListProps = {
   status: number;
   pageParam: number;
   limit: number;
+  reqType: string;
 };
 
 /**
@@ -86,11 +87,12 @@ type ResumeListProps = {
  * @returns page,다음 page, 해당 page에 들어있는 data
  */
 export const getResumeListByInfinite = async (params: ResumeListProps) => {
-  const { pageParam, limit, status } = params;
+  const { pageParam, limit, status, reqType } = params;
   const queryParams = new URLSearchParams({
     page: pageParam.toString(),
     limit: limit.toString(),
     status: status.toString(),
+    reqType,
   });
 
   const url = `${ROOT}?${queryParams}`;
