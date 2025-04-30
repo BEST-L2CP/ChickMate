@@ -95,7 +95,7 @@ export const getResumeListByInfinite = async (params: ResumeListProps) => {
 
   const url = `${ROOT}?${queryParams}`;
 
-  const data = await fetchWithSentry(url, {
+  const data: { response: ResumeType[]; nextPage: number | null } = await fetchWithSentry(url, {
     method: GET,
   });
 
