@@ -147,6 +147,8 @@ model JobPosting {
   positionTitle         String   @map("position_title")
   companyName           String   @map("company_name")
   locationName          String   @map("location_name")
+  industryName          String?   @map("industry_name")
+  keyword               String?   @map("keyword")
   experienceCode        Int      @map("experience_code")
   experienceName        String   @map("experience_name")
   requiredEducationCode Int      @map("required_education_code")
@@ -159,7 +161,7 @@ model JobPosting {
   expirationTimestamp   Int      @map("expiration_timestamp")
   createdAt             DateTime @default(now()) @map("created_at")
 
-  userSelectedJobs UserSelectedJob[]
+  userSelectedJobs      UserSelectedJob[]
 
   @@map("job_posting")
 }
